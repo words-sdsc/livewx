@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>project 1</title>
+		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+		<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+		<script src="./LetterIcon.js"></script>
+		<script src="./PopupIcon.js"></script>
+	</head>
+	<body>
+		
+	<div id="map" style="width: 1000px; height: 400px; border: 1px solid #ccc"></div>
+	
+	<script type="text/javascript">
+	var polygon=null;
+	var center = [32.880865,-117.234080];
+
+	var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+	    osmAttrib = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	    osm = L.tileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
+
+	map = new L.Map('map', {layers: [osm], center: new L.LatLng(center[0], center[1]), zoom: 10});
+
+	SDSC = new L.marker([32.88, -117.24], { icon: L.letterIcon('SDSC', { radius: 20 }), clickable: false }).addTo(map);
+	SDSC_data = new L.marker([32.88, -117.24], { icon: L.popupIcon("Don't click me"), clickable: false }).addTo(map);
+	
+	WS = new L.marker([33.27, -116.64], { icon: L.letterIcon('WS', { radius: 20 }), clickable: false }).addTo(map);
+	WS_data = new L.marker([33.27, -116.64], { icon: L.popupIcon("Don't click me"), clickable: false }).addTo(map);
+	
+	TP = new L.marker([33.52, -116.43], { icon: L.letterIcon('TP', { radius: 20 }), clickable: false }).addTo(map);
+	TP_data = new L.marker([33.52, -116.43], { icon: L.popupIcon("Don't click me"), clickable: false }).addTo(map);
+
+
+	
+	</script>
+		
+		<form>
+			<input id="textMessage" type="text">
+			<input onclick="sendMessage();" value="send message" type="button">
+		</form>
+		<br>
+		<textarea id="messagesTextArea" rows="10" cols="150"></textarea>
+		<script type="text/javascript">
+			var area=[];
+		
+			var webSocket = new WebSocket("ws://localhost:44255/websocket/WebSocketEndPoint");
+			var messagesTextArea = document.getElementById("messagesTextArea");
+			webSocket.onopen =  function(message){processOpen(message);};
+			webSocket.onclose =  function(message){processClose(message);};
+			webSocket.onerror =  function(message){processError(message);};
+			webSocket.onmessage = function processMessage(message){
+				var jsonData = JSON.parse(message.data);
+				
+				
+				if(jsonData.message != null){
+					window.map.removeLayer(SDSC_data);
+					SDSC_data = new L.marker([32.88, -117.24], { icon: L.popupIcon(jsonData.message), clickable: false }).addTo(map);
+					messagesTextArea.value += jsonData.message;
+				}
+ 
+			}
+			function IsNumeric(n) {
+				return !isNaN(parseFloat(n)) && isFinite(n);
+			}
+			function processOpen(message){
+				messagesTextArea.value += "server connect..."+"\n";
+			}
+			function processClose(message){
+				webSocket.send("client disconnect...");
+				messagesTextArea.value += "Sever Disconnect..." + "\n";
+			}
+			function sendMessage(){
+				if(textMessage.value!="close"){
+					webSocket.send(textMessage.value);
+					//messagesTextArea.value += "send to server ==> " + textMessage.value+"\n";
+					textMessage.value="";	
+				}else{
+					webSocket.close();
+				}
+
+			}
+			function processError(message){
+				messagesTextArea.value += "Error..." + "\n";
+			}
+		</script>
+	</body>
+</html>
