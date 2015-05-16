@@ -26,7 +26,7 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
 
-@ServerEndpoint("/WebSocketEndPoint")
+@ServerEndpoint(value="/websocket")
 public class WebSocketEndPoint {
 
 	static Set<Session> users = Collections.synchronizedSet(new HashSet<Session>());

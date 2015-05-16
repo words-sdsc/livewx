@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>project 1</title>
+		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+		<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+		<script src="lib/LetterIcon.js"></script>
+		<script src="lib/PopupIcon.js"></script>
+
+	    <script src="lib/L.LineUtil.PolylineDecorator.js" type="text/javascript"></script>
+	    <script src="lib/L.RotatedMarker.js" type="text/javascript"></script>
+	    <script src="lib/L.Symbol.js" type="text/javascript"></script>
+	    <script src="lib/L.PolylineDecorator.js" type="text/javascript"></script>
+	    <script src="lib/leaflet.polylineDecorator.js" type="text/javascript"></script>
+	    <script src="lib/leaflet.polylineDecorator.min.js" type="text/javascript"></script>
+	</head>
+	<body>
+		
+	<div id="map" style="width: 1800px; height: 600px; border: 1px solid #ccc"></div>
+	
+	<script type="text/javascript" >
+	var SDSC_POS = new L.LatLng(32.88, -117.24);
+	var WS_POS = new L.LatLng(33.27, -116.64);
+	var TP_POS = new L.LatLng(33.52, -116.43);
+	var CIRCLE_R = 25000;
+	var ARROW_R = 0.25;
+	var CIRCLE_T = 0.5;
+	
+	var polygon=null;
+	var center = [32.880865,-117.234080];
+
+	var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+	    osmAttrib = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	    osm = L.tileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
+
+	map = new L.Map('map', {layers: [osm], center: new L.LatLng(center[0], center[1]), zoom: 10});
+	
+	
+	SDSC = new L.marker(SDSC_POS, { icon: L.letterIcon('SDSC', { radius: 25 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var SDSC_circle = L.circle(SDSC_POS, CIRCLE_R, {
+	    color: 'white',
+	}).addTo(map);
+    var SDSC_Arrow = L.polyline([SDSC_POS, SDSC_POS], {}).addTo(map);
+    var SDSC_arrowHead = L.polylineDecorator(SDSC_Arrow).addTo(map);
+    var SDSC_arrowOffset = 0;
+    var anim = window.setInterval(function() {
+    	SDSC_arrowHead.setPatterns([
+            {offset: SDSC_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: 25, polygon: false, pathOptions: {stroke: true}})}
+        ])
+        if(++SDSC_arrowOffset > 100)
+        	SDSC_arrowOffset = 0;
+    }, 25);
+	
+	
+    WS = new L.marker(WS_POS, { icon: L.letterIcon('WS', { radius: 25 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var WS_circle = L.circle(WS_POS, CIRCLE_R, {
+	    color: 'white',
+	}).addTo(map);
+    var WS_Arrow = L.polyline([WS_POS, WS_POS], {}).addTo(map);
+    var WS_arrowHead = L.polylineDecorator(WS_Arrow).addTo(map);
+    var WS_arrowOffset = 0;
+    var anim = window.setInterval(function() {
+    	WS_arrowHead.setPatterns([
+            {offset: WS_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: 25, polygon: false, pathOptions: {stroke: true}})}
+        ])
+        if(++WS_arrowOffset > 100)
+        	WS_arrowOffset = 0;
+    }, 25);
+    
+
+    TP = new L.marker(TP_POS, { icon: L.letterIcon('TP', { radius: 25 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var TP_circle = L.circle(TP_POS, CIRCLE_R, {
+	    color: 'white',
+	}).addTo(map);
+    var TP_Arrow = L.polyline([TP_POS, TP_POS], {}).addTo(map);
+    var TP_arrowHead = L.polylineDecorator(TP_Arrow).addTo(map);
+    var TP_arrowOffset = 0;
+    var anim = window.setInterval(function() {
+    	TP_arrowHead.setPatterns([
+            {offset: TP_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: 25, polygon: false, pathOptions: {stroke: true}})}
+        ])
+        if(++TP_arrowOffset > 100)
+        	TP_arrowOffset = 0;
+    }, 25);
+
+
+
+    
+	</script>
+		
+		<form>
+			<input id="textMessage" type="text">
+			<input onclick="sendMessage();" value="send message" type="button">
+		</form>
+		<br>
+		<textarea id="messagesTextArea" rows="10" cols="150"></textarea>
+		<script type="text/javascript">
+			var area=[];
+		
+			var webSocket = new WebSocket("ws://florian.sdsc.edu:8080/livewx/websocket");
+			var messagesTextArea = document.getElementById("messagesTextArea");
+			webSocket.onopen =  function(message){processOpen(message);};
+			webSocket.onclose =  function(message){processClose(message);};
+			webSocket.onerror =  function(message){processError(message);};
+			
+			select_th_color = function(th){
+				
+				if(th<-10){
+					return "#000066"
+				}else if(th>=-10 && th<-7){
+					return "#333399"
+				}else if(th>=-7 && th<-4){
+					return "#66FFFF"
+				}else if(th>=-4 && th<-1){
+					return "#3333CC"
+				}else if(th>=-1 && th<2){
+					return "#3366FF"
+				}else if(th>=2 && th<5){
+					return "#6699FF"
+				}else if(th>=5 && th<8){
+					return "#99CCFF"
+				}else if(th>=11 && th<14){
+					return "#EAF5FF"
+				}else if(th>=14 && th<17){
+					return "#FFEBEB"
+				}else if(th>=17 && th<20){
+					return "#FFE6CC"
+				}else if(th>=20 && th<23){
+					return "#FF9966"
+				}else if(th>=23 && th<26){
+					return "#FFCC99"
+				}else if(th>=26 && th<29){
+					return "#FFAD85"
+				}else if(th>=29 && th<32){
+					return "#FF9966"
+				}else if(th>=32 && th<35){
+					return "#FF9933"
+				}else if(th>=35 && th<38){
+					return "#FF6600" 
+				}else if(th>=38 && th<41){
+					return "#FF3300"
+				}else if(th>=41 && th<44){
+					return "#FF0000"
+				}else{
+					return "#CC0000"
+				}
+			};
+			info_output = function(jsonData){
+				
+				return (
+				"Sn: "+jsonData.message.Sn+"<br />"+
+				"Sm: "+jsonData.message.Sm+"<br />"+
+				"Sx: "+jsonData.message.Sx+"<br />"+
+				"Dn: "+jsonData.message.Dn+"<br />"+
+				"Dm: "+jsonData.message.Dm+"<br />"+
+				"Dx: "+jsonData.message.Dx+"<br />"+
+				"Pa: "+jsonData.message.Pa+"<br />"+
+				"Ta: "+jsonData.message.Ta+"<br />"+
+				"Tp: "+jsonData.message.Tp+"<br />"+
+				"Ua: "+jsonData.message.Ua+"<br />"+
+				"Rc: "+jsonData.message.Rc+"<br />"+
+				"Rd: "+jsonData.message.Rd+"<br />"+
+				"Ri: "+jsonData.message.Ri+"<br />"+
+				"Rp: "+jsonData.message.Rp+"<br />"+
+				"Hc: "+jsonData.message.Hc+"<br />"+
+				"Hd: "+jsonData.message.Hd+"<br />"+
+				"Hi: "+jsonData.message.Hi+"<br />"+
+				"Hp: "+jsonData.message.Hp+"<br />"+
+				"Th: "+jsonData.message.Th+"<br />"+
+				"Vh: "+jsonData.message.Vh+"<br />"+
+				"Vs: "+jsonData.message.Vs+"<br />"+
+				"Vr: "+jsonData.message.Vr)
+			}
+			show_data = function (station, jsonData){
+				var popup = station.getPopup();
+				console.log(popup._isOpen);
+				if(popup._isOpen){
+					station.closePopup();
+					station.bindPopup(info_output(jsonData));
+					station.openPopup();
+				}else{
+					SDSC.bindPopup(info_output(jsonData));
+				}
+			}
+			get_wind_cord = function(origin, r, degree){
+				var d = parseFloat(degree);
+				return new L.LatLng(r*Math.cos(d*Math.PI/180)+origin.lat, r*Math.sin(d*Math.PI/180)+origin.lng);
+				//return new L.LatLng(origin.lat, origin.lng);
+			}
+			
+			webSocket.onmessage = function processMessage(message){
+				var jsonData = JSON.parse(message.data);
+				
+				console.log(jsonData);
+				if(jsonData.message != null){
+
+					if(jsonData.message.Name == "SDSC"){
+						if(jsonData.message.Ta!=""){
+							var ta = jsonData.message.Ta.split(".");
+							window.map.removeLayer(SDSC_circle);
+							SDSC_circle = L.circle(SDSC_POS, CIRCLE_R, {
+							    color: select_th_color(ta[0]),
+							    fillColor: select_th_color(ta[0]),
+							    fillOpacity: CIRCLE_T
+							}).addTo(map);
+							show_data(SDSC, jsonData);
+							
+							if(jsonData.message.Dm!= ""){
+								var dm = jsonData.message.Dm.split(".");
+								window.map.removeLayer(SDSC_Arrow);
+								window.map.removeLayer(SDSC_arrowHead);
+							   	SDSC_Arrow = L.polyline([SDSC_POS, get_wind_cord(SDSC_POS, ARROW_R, dm)], {}).addTo(map);
+							    SDSC_arrowHead = L.polylineDecorator(SDSC_Arrow).addTo(map);
+							}
+						}
+					}else if(jsonData.message.Name == "WS"){
+						if(jsonData.message.Ta!=""){
+							var ta = jsonData.message.Ta.split(".");
+							window.map.removeLayer(WS_circle);
+							WS_circle = L.circle(WS_POS, CIRCLE_R, {
+							    color: select_th_color(ta[0]),
+							    fillColor: select_th_color(ta[0]),
+							    fillOpacity: CIRCLE_T
+							}).addTo(map);
+							show_data(WS, jsonData);
+							
+							if(jsonData.message.Dm!= ""){
+								var dm = jsonData.message.Dm.split(".");
+								window.map.removeLayer(WS_Arrow);
+								window.map.removeLayer(WS_arrowHead);
+							   	WS_Arrow = L.polyline([WS_POS, get_wind_cord(WS_POS, ARROW_R, dm)], {}).addTo(map);
+							    WS_arrowHead = L.polylineDecorator(WS_Arrow).addTo(map);
+							}
+						}
+					}else if(jsonData.message.Name == "TP"){
+						if(jsonData.message.Ta!=""){
+							var ta = jsonData.message.Ta.split(".");
+							window.map.removeLayer(TP_circle);
+							TP_circle = L.circle(TP_POS, CIRCLE_R, {
+							    color: select_th_color(ta[0]),
+							    fillColor: select_th_color(ta[0]),
+							    fillOpacity: CIRCLE_T
+							}).addTo(map);
+							show_data(TP, jsonData);
+							
+							if(jsonData.message.Dm!= ""){
+								var dm = jsonData.message.Dm.split(".");
+								window.map.removeLayer(TP_Arrow);
+								window.map.removeLayer(TP_arrowHead);
+							   	TP_Arrow = L.polyline([TP_POS, get_wind_cord(TP_POS, ARROW_R, dm)], {}).addTo(map);
+							    TP_arrowHead = L.polylineDecorator(TP_Arrow).addTo(map);
+							}
+						}
+					}			
+				}
+ 
+			}
+			function IsNumeric(n) {
+				return !isNaN(parseFloat(n)) && isFinite(n);
+			}
+			function processOpen(message){
+				messagesTextArea.value += "server connect..."+"\n";
+			}
+			function processClose(message){
+				webSocket.send("client disconnect...");
+				messagesTextArea.value += "Sever Disconnect..." + "\n";
+			}
+			function sendMessage(){
+				if(textMessage.value!="close"){
+					webSocket.send(textMessage.value);
+					//messagesTextArea.value += "send to server ==> " + textMessage.value+"\n";
+					textMessage.value="";	
+				}else{
+					webSocket.close();
+				}
+
+			}
+			function processError(message){
+				messagesTextArea.value += "Error..." + "\n";
+			}
+		</script>
+	</body>
+</html>
