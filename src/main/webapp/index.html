@@ -5,8 +5,8 @@
 		<meta charset="UTF-8">
 		<title>project 1</title>
 		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
-<<<<<<< HEAD:src/main/webapp/index.html
-		<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+		<script src="lib/leaflet-src.js" type="text/javascript"></script>
+	    <script src="lib/leaflet.js" type="text/javascript"></script>
 		<script src="lib/LetterIcon.js"></script>
 		<script src="lib/PopupIcon.js"></script>
 
@@ -16,18 +16,6 @@
 	    <script src="lib/L.PolylineDecorator.js" type="text/javascript"></script>
 	    <script src="lib/leaflet.polylineDecorator.js" type="text/javascript"></script>
 	    <script src="lib/leaflet.polylineDecorator.min.js" type="text/javascript"></script>
-=======
-		<script src="leaflet-src.js" type="text/javascript"></script>
-	    <script src="leaflet.js" type="text/javascript"></script>
-		<script src="./LetterIcon.js"></script>
-		<script src="./PopupIcon.js"></script>
-	    <script src="../src/L.LineUtil.PolylineDecorator.js" type="text/javascript"></script>
-	    <script src="../src/L.RotatedMarker.js" type="text/javascript"></script>
-	    <script src="../src/L.Symbol.js" type="text/javascript"></script>
-	    <script src="../src/L.PolylineDecorator.js" type="text/javascript"></script>
-	    <script src="./leaflet.polylineDecorator.js" type="text/javascript"></script>
-	    <script src="./leaflet.polylineDecorator.min.js" type="text/javascript"></script>
->>>>>>> 0c98c87a40bdc90716c15a91daebb1f5601ca75e:WebContent/index.html
 	</head>
 	<body>
 		
@@ -402,6 +390,7 @@
 				var jsonData = JSON.parse(message.data);
 				if(jsonData.message != null){
 					if(jsonData.message.Name == "SDSC"){
+						show_data(SDSC, jsonData);
 						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
 							var ta = jsonData.message.Ta.split(".");
 							if(SDSC_circle!=null){
@@ -412,7 +401,6 @@
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
-							show_data(SDSC, jsonData);
 						}			
 						if((menu==3 || menu==1)){
 							if(jsonData.message.Dm!= ""){
@@ -442,6 +430,7 @@
 						}
 						
 					}else if(jsonData.message.Name == "WS"){
+						show_data(WS, jsonData);
 						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
 							var ta = jsonData.message.Ta.split(".");
 							if(WS_circle!=null){
@@ -452,7 +441,6 @@
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
-							show_data(WS, jsonData);
 						}
 							
 						if((menu==3 || menu==1)){
@@ -482,6 +470,7 @@
 							}
 						}
 					}else if(jsonData.message.Name == "TP"){
+						show_data(TP, jsonData);
 						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
 							var ta = jsonData.message.Ta.split(".");
 							if(TP_circle!=null){
@@ -492,7 +481,6 @@
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
-							show_data(TP, jsonData);
 						}	
 						if((menu==3 || menu==1)){
 							if(jsonData.message.Dm!= ""){
@@ -521,6 +509,7 @@
 							}
 						}
 					}else if(jsonData.message.Name == "BMR"){
+						show_data(BMR, jsonData);
 						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
 							var ta = jsonData.message.Ta.split(".");
 							if(BMR_circle!=null){
@@ -531,7 +520,6 @@
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
-							show_data(BMR, jsonData);
 						}
 							
 						if((menu==3 || menu==1)){
@@ -561,6 +549,7 @@
 							}
 						}
 					}else if(jsonData.message.Name == "BH"){
+						show_data(BH, jsonData);
 						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
 							var ta = jsonData.message.Ta.split(".");
 							if(BH_circle!=null){
@@ -571,7 +560,6 @@
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
-							show_data(BH, jsonData);
 						}
 							
 						if((menu==3 || menu==1)){
@@ -601,6 +589,7 @@
 							}
 						}
 					}else if(jsonData.message.Name == "LP"){
+						show_data(LP, jsonData);
 						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
 							var ta = jsonData.message.Ta.split(".");
 							if(LP_circle!=null){
@@ -611,7 +600,6 @@
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
-							show_data(LP, jsonData);
 						}
 							
 						if((menu==3 || menu==1)){
@@ -641,6 +629,7 @@
 							}
 						}
 					}else if(jsonData.message.Name == "MG"){
+						show_data(MG, jsonData);
 						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
 							var ta = jsonData.message.Ta.split(".");
 							if(MG_circle!=null){
@@ -651,7 +640,6 @@
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
-							show_data(MG, jsonData);
 						}
 							
 						if((menu==3 || menu==1)){
@@ -681,6 +669,7 @@
 							}
 						}
 					}else if(jsonData.message.Name == "ML"){
+						show_data(ML, jsonData)
 						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
 							var ta = jsonData.message.Ta.split(".");
 							if(ML_circle!=null){
@@ -690,8 +679,7 @@
 							    color: select_th_color(ta[0]),
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
-							}).addTo(map);
-							show_data(ML, jsonData);
+							}).addTo(map);;
 						}
 							
 						if((menu==3 || menu==1)){
@@ -721,6 +709,7 @@
 							}
 						}
 					}else if(jsonData.message.Name == "MW"){
+						show_data(MW, jsonData);
 						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
 							var ta = jsonData.message.Ta.split(".");
 							if(MW_circle!=null){
@@ -731,7 +720,6 @@
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
-							show_data(MW, jsonData);
 						}
 							
 						if((menu==3 || menu==1)){
@@ -761,6 +749,7 @@
 							}
 						}
 					}else if(jsonData.message.Name == "CNMZ3"){
+						show_data(CNMZ3, jsonData);
 						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
 							var ta = jsonData.message.Ta.split(".");
 							if(CNMZ3_circle!=null){
@@ -771,7 +760,6 @@
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
-							show_data(CNMZ3, jsonData);
 						}
 							
 						if((menu==3 || menu==1)){
@@ -801,6 +789,7 @@
 							}
 						}
 					}else if(jsonData.message.Name == "NN"){
+						show_data(NN, jsonData);
 						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
 							var ta = jsonData.message.Ta.split(".");
 							if(NN_circle!=null){
@@ -811,7 +800,6 @@
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
-							show_data(NN, jsonData);
 						}
 							
 						if((menu==3 || menu==1)){
@@ -841,6 +829,7 @@
 							}
 						}
 					}else if(jsonData.message.Name == "PA"){
+						show_data(PA, jsonData);
 						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
 							var ta = jsonData.message.Ta.split(".");
 							if(PA_circle!=null){
@@ -851,7 +840,6 @@
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
-							show_data(PA, jsonData);
 						}
 							
 						if((menu==3 || menu==1)){
@@ -881,6 +869,7 @@
 							}
 						}
 					}else if(jsonData.message.Name == "PLC"){
+						show_data(PLC, jsonData);
 						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
 							var ta = jsonData.message.Ta.split(".");
 							if(PLC_circle!=null){
@@ -891,7 +880,6 @@
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
-							show_data(PLC, jsonData);
 						}
 							
 						if((menu==3 || menu==1)){
@@ -921,6 +909,7 @@
 							}
 						}
 					}else if(jsonData.message.Name == "RM"){
+						show_data(RM, jsonData);
 						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
 							var ta = jsonData.message.Ta.split(".");
 							if(RM_circle!=null){
@@ -931,7 +920,6 @@
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
-							show_data(RM, jsonData);
 						}
 							
 						if((menu==3 || menu==1)){
@@ -961,6 +949,7 @@
 							}
 						}
 					}else if(jsonData.message.Name == "SCI"){
+						show_data(SCI, jsonData);
 						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
 							var ta = jsonData.message.Ta.split(".");
 							if(SCI_circle!=null){
@@ -971,7 +960,6 @@
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
-							show_data(SCI, jsonData);
 						}
 							
 						if((menu==3 || menu==1)){
@@ -1001,6 +989,7 @@
 							}
 						}
 					}else if(jsonData.message.Name == "SY"){
+						show_data(SY, jsonData)
 						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
 							var ta = jsonData.message.Ta.split(".");
 							if(SY_circle!=null){
@@ -1010,8 +999,7 @@
 							    color: select_th_color(ta[0]),
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
-							}).addTo(map);
-							show_data(SY, jsonData);
+							}).addTo(map);;
 						}
 							
 						if((menu==3 || menu==1)){
@@ -1040,87 +1028,8 @@
 							    }, get_wind_speed(sm[0]));
 							}
 						}
-					}else if(jsonData.message.Name == "SO"){
-						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
-							var ta = jsonData.message.Ta.split(".");
-							if(SO_circle!=null){
-								window.map.removeLayer(SO_circle);
-							}
-							SO_circle = L.circle(SO_POS, CIRCLE_R, {
-							    color: select_th_color(ta[0]),
-							    fillColor: select_th_color(ta[0]),
-							    fillOpacity: CIRCLE_T
-							}).addTo(map);
-							show_data(SO, jsonData);
-						}
-							
-						if((menu==3 || menu==1)){
-							if(jsonData.message.Dm!= ""){
-								var dm = jsonData.message.Dm.split(".");
-								if(SO_Arrow!=null && SO_arrowHead!=null){
-									window.map.removeLayer(SO_Arrow);
-									window.map.removeLayer(SO_arrowHead);
-								}
-							   	SO_Arrow = L.polyline([SO_POS, get_wind_cord(SO_POS, ARROW_R, dm[0])], {}).addTo(map);
-							    SO_arrowHead = L.polylineDecorator(SO_Arrow).addTo(map);
-							}
-							if(jsonData.message.Sm!= ""){
-								var sm = jsonData.message.Sm.split("M");
-								if(anim_SO!=null){
-									clearInterval(anim_SO);
-								}
-							    anim_SO = window.setInterval(function() {
-							    	if(SO_Arrow!=null){
-							        	SO_arrowHead.setPatterns([
-							        		{offset: SO_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
-							        	     ])
-	        	                        if(++SO_arrowOffset > 100)
-	        	                        	SO_arrowOffset = 0;
-							    	}
-							    }, get_wind_speed(sm[0]));
-							}
-						}
-					}else if(jsonData.message.Name == "SMERNS"){
-						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
-							var ta = jsonData.message.Ta.split(".");
-							if(SMERNS_circle!=null){
-								window.map.removeLayer(SMERNS_circle);
-							}
-							SMERNS_circle = L.circle(SMERNS_POS, CIRCLE_R, {
-							    color: select_th_color(ta[0]),
-							    fillColor: select_th_color(ta[0]),
-							    fillOpacity: CIRCLE_T
-							}).addTo(map);
-							show_data(SMERNS, jsonData);
-						}
-							
-						if((menu==3 || menu==1)){
-							if(jsonData.message.Dm!= ""){
-								var dm = jsonData.message.Dm.split(".");
-								if(SMERNS_Arrow!=null && SMERNS_arrowHead!=null){
-									window.map.removeLayer(SMERNS_Arrow);
-									window.map.removeLayer(SMERNS_arrowHead);
-								}
-							   	SMERNS_Arrow = L.polyline([SMERNS_POS, get_wind_cord(SMERNS_POS, ARROW_R, dm[0])], {}).addTo(map);
-							    SMERNS_arrowHead = L.polylineDecorator(SMERNS_Arrow).addTo(map);
-							}
-							if(jsonData.message.Sm!= ""){
-								var sm = jsonData.message.Sm.split("M");
-								if(anim_SMERNS!=null){
-									clearInterval(anim_SMERNS);
-								}
-							    anim_SMERNS = window.setInterval(function() {
-							    	if(SMERNS_Arrow!=null){
-							        	SMERNS_arrowHead.setPatterns([
-							        		{offset: SMERNS_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
-							        	     ])
-	        	                        if(++SMERNS_arrowOffset > 100)
-	        	                        	SMERNS_arrowOffset = 0;
-							    	}
-							    }, get_wind_speed(sm[0]));
-							}
-						}
 					}else if(jsonData.message.Name == "HWB"){
+						show_data(HWB, jsonData);
 						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
 							var ta = jsonData.message.Ta.split(".");
 							if(HWB_circle!=null){
@@ -1131,7 +1040,6 @@
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
-							show_data(HWB, jsonData);
 						}
 							
 						if((menu==3 || menu==1)){
