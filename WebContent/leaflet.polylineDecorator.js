@@ -183,10 +183,7 @@ L.RotatedMarker = L.Marker.extend({
 
 L.rotatedMarker = function (pos, options) {
     return new L.RotatedMarker(pos, options);
-};﻿/**
-* Defines several classes of symbol factories,
-* to be used with L.PolylineDecorator
-*/
+};
 
 L.Symbol = L.Symbol || {};
 

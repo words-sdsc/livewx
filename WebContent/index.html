@@ -5,10 +5,10 @@
 		<meta charset="UTF-8">
 		<title>project 1</title>
 		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
-		<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+		<script src="leaflet-src.js" type="text/javascript"></script>
+	    <script src="leaflet.js" type="text/javascript"></script>
 		<script src="./LetterIcon.js"></script>
 		<script src="./PopupIcon.js"></script>
-
 	    <script src="../src/L.LineUtil.PolylineDecorator.js" type="text/javascript"></script>
 	    <script src="../src/L.RotatedMarker.js" type="text/javascript"></script>
 	    <script src="../src/L.Symbol.js" type="text/javascript"></script>
@@ -18,75 +18,260 @@
 	</head>
 	<body>
 		
-	<div id="map" style="width: 1800px; height: 600px; border: 1px solid #ccc"></div>
+	<input onchange="checkLayer()" type = "checkbox" name = "menu" id = "wind" value = 1 checked>wind</input>
+	<input onchange="checkLayer()" type = "checkbox" name = "menu" id = "temperature" value = 2 checked>temperature</input>
+	<br>
+	<div id="map" style="width: 1200px; height: 600px; border: 1px solid #ccc"></div>
 	
 	<script type="text/javascript" >
+	var menu = 3;
+	
+	function checkLayer(){
+		menu = 0;
+
+		if(!document.getElementById("wind").checked){
+			window.map.removeLayer(SDSC_Arrow);
+			window.map.removeLayer(SDSC_arrowHead);
+			window.map.removeLayer(WS_Arrow);
+			window.map.removeLayer(WS_arrowHead);
+			window.map.removeLayer(TP_Arrow);
+			window.map.removeLayer(TP_arrowHead);
+			window.map.removeLayer(BMR_Arrow);
+			window.map.removeLayer(BMR_arrowHead);
+			window.map.removeLayer(BH_Arrow);
+			window.map.removeLayer(BH_arrowHead);
+			window.map.removeLayer(LP_Arrow);
+			window.map.removeLayer(LP_arrowHead);
+			window.map.removeLayer(MG_Arrow);
+			window.map.removeLayer(MG_arrowHead);
+			window.map.removeLayer(ML_Arrow);
+			window.map.removeLayer(ML_arrowHead);
+			window.map.removeLayer(MW_Arrow);
+			window.map.removeLayer(MW_arrowHead);
+			window.map.removeLayer(CNMZ3_Arrow);
+			window.map.removeLayer(CNMZ3_arrowHead);
+			window.map.removeLayer(NN_Arrow);
+			window.map.removeLayer(NN_arrowHead);
+			window.map.removeLayer(PA_Arrow);
+			window.map.removeLayer(PA_arrowHead);
+			window.map.removeLayer(PLC_Arrow);
+			window.map.removeLayer(PLC_arrowHead);
+			window.map.removeLayer(RM_Arrow);
+			window.map.removeLayer(RM_arrowHead);
+			window.map.removeLayer(SCI_Arrow);
+			window.map.removeLayer(SCI_arrowHead);
+			window.map.removeLayer(SY_Arrow);
+			window.map.removeLayer(SY_arrowHead);
+			window.map.removeLayer(SO_Arrow);
+			window.map.removeLayer(SO_arrowHead);
+			window.map.removeLayer(SMERNS_Arrow);
+			window.map.removeLayer(SMERNS_arrowHead);
+			window.map.removeLayer(HWB_Arrow);
+			window.map.removeLayer(HWB_arrowHead);
+		}
+		if(!document.getElementById("temperature").checked){
+			window.map.removeLayer(SDSC_circle);
+			window.map.removeLayer(WS_circle);
+			window.map.removeLayer(TP_circle);
+			window.map.removeLayer(BMR_circle);
+			window.map.removeLayer(BH_circle);
+			window.map.removeLayer(LP_circle);
+			window.map.removeLayer(MG_circle);
+			window.map.removeLayer(ML_circle);
+			window.map.removeLayer(MW_circle);
+			window.map.removeLayer(CNMZ3_circle);
+			window.map.removeLayer(NN_circle);
+			window.map.removeLayer(PA_circle);
+			window.map.removeLayer(PLC_circle);
+			window.map.removeLayer(RM_circle);
+			window.map.removeLayer(SCI_circle);
+			window.map.removeLayer(SY_circle);
+			window.map.removeLayer(SO_circle);
+			window.map.removeLayer(SMERNS_circle);
+			window.map.removeLayer(HWB_circle);
+		}
+		if(document.getElementById("wind").checked){
+			menu = 1;
+		}		
+		if(document.getElementById("temperature").checked){
+			menu += 2;
+			SDSC_circle.setOpacity(100);
+		}
+	}
+	
+	// stations coordinates
 	var SDSC_POS = new L.LatLng(32.88, -117.24);
 	var WS_POS = new L.LatLng(33.27, -116.64);
 	var TP_POS = new L.LatLng(33.52, -116.43);
-	var CIRCLE_R = 25000;
-	var ARROW_R = 0.25;
-	var CIRCLE_T = 0.5;
-	
-	var polygon=null;
-	var center = [32.880865,-117.234080];
+	var BMR_POS = new L.LatLng(33.16, -116.81);
+	var BH_POS = new L.LatLng(33.33, -116.92);
+	var LP_POS = new L.LatLng(32.70, -116.76);
+	var MG_POS = new L.LatLng(33.19, -116.76);
+	var ML_POS = new L.LatLng(32.89, -116.42);
+	var MW_POS = new L.LatLng(33.01, -116.97);
+	var CNMZ3_POS = new L.LatLng(32.67, -117.24);
+	var NN_POS = new L.LatLng(32.67, -117.24);
+	var PA_POS = new L.LatLng(33.35, -116.98);
+	var PLC_POS = new L.LatLng(33.32, -116.68);
+	var RM_POS = new L.LatLng(33.40, -117.19);
+	var SCI_POS = new L.LatLng(32.91, -118.48);
+	var SY_POS = new L.LatLng(33.13, -116.61);
+	var SO_POS = new L.LatLng(33.38, -116.62);
+	var SMERNS_POS = new L.LatLng(33.46, -117.17);
+	var HWB_POS = new L.LatLng(33.03, -116.96);
 
+	
+	// markers sizes
+	var CIRCLE_R = 10000;
+	var ARROW_R = 0.1;
+	var CIRCLE_T = 0.5;
+	var center = [32.880865,-117.234080];
+	var arrow_size = 10;
+
+	// init map
 	var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 	    osmAttrib = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 	    osm = L.tileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
-
 	map = new L.Map('map', {layers: [osm], center: new L.LatLng(center[0], center[1]), zoom: 10});
 	
-	
-	SDSC = new L.marker(SDSC_POS, { icon: L.letterIcon('SDSC', { radius: 25 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
-	var SDSC_circle = L.circle(SDSC_POS, CIRCLE_R, {
-	    color: 'white',
-	}).addTo(map);
-    var SDSC_Arrow = L.polyline([SDSC_POS, SDSC_POS], {}).addTo(map);
-    var SDSC_arrowHead = L.polylineDecorator(SDSC_Arrow).addTo(map);
+	// SDSC
+	SDSC = new L.marker(SDSC_POS, { icon: L.letterIcon('SDSC', { radius: 15 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var SDSC_circle = null;
+    var SDSC_Arrow = null;
+    var SDSC_arrowHead = null;
     var SDSC_arrowOffset = 0;
-    var anim = window.setInterval(function() {
-    	SDSC_arrowHead.setPatterns([
-            {offset: SDSC_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: 25, polygon: false, pathOptions: {stroke: true}})}
-        ])
-        if(++SDSC_arrowOffset > 100)
-        	SDSC_arrowOffset = 0;
-    }, 25);
+    var anim_SDSC = null;
 	
-	
-    WS = new L.marker(WS_POS, { icon: L.letterIcon('WS', { radius: 25 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
-	var WS_circle = L.circle(WS_POS, CIRCLE_R, {
-	    color: 'white',
-	}).addTo(map);
-    var WS_Arrow = L.polyline([WS_POS, WS_POS], {}).addTo(map);
-    var WS_arrowHead = L.polylineDecorator(WS_Arrow).addTo(map);
+	// WS
+    WS = new L.marker(WS_POS, { icon: L.letterIcon('WS', { radius: 15 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var WS_circle = null;
+    var WS_Arrow = null;
+    var WS_arrowHead = null;
     var WS_arrowOffset = 0;
-    var anim = window.setInterval(function() {
-    	WS_arrowHead.setPatterns([
-            {offset: WS_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: 25, polygon: false, pathOptions: {stroke: true}})}
-        ])
-        if(++WS_arrowOffset > 100)
-        	WS_arrowOffset = 0;
-    }, 25);
+    var anim_WS = null;
+    
+	// TP
+    TP = new L.marker(TP_POS, { icon: L.letterIcon('TP', { radius: 15 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var TP_circle = null;
+    var TP_Arrow = null;
+    var TP_arrowHead = null;
+    var TP_arrowOffset = 0;
+    var anim_TP = null;
+    
+    BMR = new L.marker(BMR_POS, { icon: L.letterIcon('BMR', { radius: 15 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var BMR_circle = null;
+    var BMR_Arrow = null;
+    var BMR_arrowHead = null;
+    var BMR_arrowOffset = 0;
+    var anim_BMR = null;
+    
+    BH = new L.marker(BH_POS, { icon: L.letterIcon('BH', { radius: 15 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var BH_circle = null;
+    var BH_Arrow = null;
+    var BH_arrowHead = null;
+    var BH_arrowOffset = 0;
+    var anim_BH = null;
+    
+    LP = new L.marker(LP_POS, { icon: L.letterIcon('LP', { radius: 15 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var LP_circle = null;
+    var LP_Arrow = null;
+    var LP_arrowHead = null;
+    var LP_arrowOffset = 0;
+    var anim_LP = null;
+    
+    MG = new L.marker(MG_POS, { icon: L.letterIcon('MG', { radius: 15 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var MG_circle = null;
+    var MG_Arrow = null;
+    var MG_arrowHead = null;
+    var MG_arrowOffset = 0;
+    var anim_MG = null;
+    
+    ML = new L.marker(ML_POS, { icon: L.letterIcon('ML', { radius: 15 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var ML_circle = null;
+    var ML_Arrow = null;
+    var ML_arrowHead = null;
+    var ML_arrowOffset = 0;
+    var anim_ML = null;
+    
+    MW = new L.marker(MW_POS, { icon: L.letterIcon('MW', { radius: 15 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var MW_circle = null;
+    var MW_Arrow = null;
+    var MW_arrowHead = null;
+    var MW_arrowOffset = 0;
+    var anim_MW = null;
+    
+    CNMZ3 = new L.marker(CNMZ3_POS, { icon: L.letterIcon('CNMZ3', { radius: 15 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var CNMZ3_circle = null;
+    var CNMZ3_Arrow = null;
+    var CNMZ3_arrowHead = null;
+    var CNMZ3_arrowOffset = 0;
+    var anim_CNMZ3 = null;
+    
+    NN = new L.marker(NN_POS, { icon: L.letterIcon('NN', { radius: 15 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var NN_circle = null;
+    var NN_Arrow = null;
+    var NN_arrowHead = null;
+    var NN_arrowOffset = 0;
+    var anim_NN = null;
+    
+    PA = new L.marker(PA_POS, { icon: L.letterIcon('PA', { radius: 15 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var PA_circle = null;
+    var PA_Arrow = null;
+    var PA_arrowHead = null;
+    var PA_arrowOffset = 0;
+    var anim_PA = null;
+    
+    PLC = new L.marker(PLC_POS, { icon: L.letterIcon('PLC', { radius: 15 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var PLC_circle = null;
+    var PLC_Arrow = null;
+    var PLC_arrowHead = null;
+    var PLC_arrowOffset = 0;
+    var anim_PLC = null;
+    
+    RM = new L.marker(RM_POS, { icon: L.letterIcon('RM', { radius: 15 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var RM_circle = null;
+    var RM_Arrow = null;
+    var RM_arrowHead = null;
+    var RM_arrowOffset = 0;
+    var anim_RM = null;
+    
+    SCI = new L.marker(SCI_POS, { icon: L.letterIcon('SCI', { radius: 15 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var SCI_circle = null;
+    var SCI_Arrow = null;
+    var SCI_arrowHead = null;
+    var SCI_arrowOffset = 0;
+    var anim_SCI = null;
+    
+    SY = new L.marker(SY_POS, { icon: L.letterIcon('SY', { radius: 15 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var SY_circle = null;
+    var SY_Arrow = null;
+    var SY_arrowHead = null;
+    var SY_arrowOffset = 0;
+    var anim_SY = null;
+    
+    SO = new L.marker(SO_POS, { icon: L.letterIcon('SO', { radius: 15 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var SO_circle = null;
+    var SO_Arrow = null;
+    var SO_arrowHead = null;
+    var SO_arrowOffset = 0;
+    var anim_SO = null;
+    
+    SMERNS = new L.marker(SMERNS_POS, { icon: L.letterIcon('SMERNS', { radius: 15 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var SMERNS_circle = null;
+    var SMERNS_Arrow = null;
+    var SMERNS_arrowHead = null;
+    var SMERNS_arrowOffset = 0;
+    var anim_SMERNS = null;
+    
+    HWB = new L.marker(HWB_POS, { icon: L.letterIcon('HWB', { radius: 15 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
+	var HWB_circle = null;
+    var HWB_Arrow = null;
+    var HWB_arrowHead = null;
+    var HWB_arrowOffset = 0;
+    var anim_HWB = null;
     
 
-    TP = new L.marker(TP_POS, { icon: L.letterIcon('TP', { radius: 25 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
-	var TP_circle = L.circle(TP_POS, CIRCLE_R, {
-	    color: 'white',
-	}).addTo(map);
-    var TP_Arrow = L.polyline([TP_POS, TP_POS], {}).addTo(map);
-    var TP_arrowHead = L.polylineDecorator(TP_Arrow).addTo(map);
-    var TP_arrowOffset = 0;
-    var anim = window.setInterval(function() {
-    	TP_arrowHead.setPatterns([
-            {offset: TP_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: 25, polygon: false, pathOptions: {stroke: true}})}
-        ])
-        if(++TP_arrowOffset > 100)
-        	TP_arrowOffset = 0;
-    }, 25);
-
-
-
+	
     
 	</script>
 		
@@ -121,7 +306,10 @@
 					return "#6699FF"
 				}else if(th>=5 && th<8){
 					return "#99CCFF"
-				}else if(th>=11 && th<14){
+				}else if(th>=8 && th<11){
+					return "#99CCFF"
+				}
+				else if(th>=11 && th<14){
 					return "#EAF5FF"
 				}else if(th>=14 && th<17){
 					return "#FFEBEB"
@@ -147,6 +335,14 @@
 					return "#CC0000"
 				}
 			};
+			get_wind_speed = function(sm){
+				var speed = 100 - sm*15;
+				if(speed>0){
+					return speed;
+				}else{
+					return 1;
+				}
+			}
 			info_output = function(jsonData){
 				
 				return (
@@ -175,7 +371,6 @@
 			}
 			show_data = function (station, jsonData){
 				var popup = station.getPopup();
-				console.log(popup._isOpen);
 				if(popup._isOpen){
 					station.closePopup();
 					station.bindPopup(info_output(jsonData));
@@ -192,68 +387,767 @@
 			
 			webSocket.onmessage = function processMessage(message){
 				var jsonData = JSON.parse(message.data);
-				
-				console.log(jsonData);
 				if(jsonData.message != null){
-
 					if(jsonData.message.Name == "SDSC"){
-						if(jsonData.message.Ta!=""){
+						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
 							var ta = jsonData.message.Ta.split(".");
-							window.map.removeLayer(SDSC_circle);
+							if(SDSC_circle!=null){
+								window.map.removeLayer(SDSC_circle);
+							}
 							SDSC_circle = L.circle(SDSC_POS, CIRCLE_R, {
 							    color: select_th_color(ta[0]),
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
 							show_data(SDSC, jsonData);
-							
+						}			
+						if((menu==3 || menu==1)){
 							if(jsonData.message.Dm!= ""){
 								var dm = jsonData.message.Dm.split(".");
-								window.map.removeLayer(SDSC_Arrow);
-								window.map.removeLayer(SDSC_arrowHead);
-							   	SDSC_Arrow = L.polyline([SDSC_POS, get_wind_cord(SDSC_POS, ARROW_R, dm)], {}).addTo(map);
+								if(SDSC_Arrow!=null && SDSC_arrowHead!=null){
+									window.map.removeLayer(SDSC_Arrow);
+									window.map.removeLayer(SDSC_arrowHead);
+								}
+							   	SDSC_Arrow = L.polyline([SDSC_POS, get_wind_cord(SDSC_POS, ARROW_R, dm[0])], {}).addTo(map);
 							    SDSC_arrowHead = L.polylineDecorator(SDSC_Arrow).addTo(map);
 							}
+							if(jsonData.message.Sm!= ""){
+								var sm = jsonData.message.Sm.split("M");
+								if(anim_SDSC!=null){
+									clearInterval(anim_SDSC);
+								}
+							    anim_SDSC = window.setInterval(function() {
+							    	if(SDSC_Arrow!=null){
+							        	SDSC_arrowHead.setPatterns([
+							        		{offset: SDSC_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        	     ])
+	        	                        if(++SDSC_arrowOffset > 100)
+	        	                        	SDSC_arrowOffset = 0;
+							    	}
+							    }, get_wind_speed(sm[0]));
+							}
 						}
+						
 					}else if(jsonData.message.Name == "WS"){
-						if(jsonData.message.Ta!=""){
+						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
 							var ta = jsonData.message.Ta.split(".");
-							window.map.removeLayer(WS_circle);
+							if(WS_circle!=null){
+								window.map.removeLayer(WS_circle);
+							}
 							WS_circle = L.circle(WS_POS, CIRCLE_R, {
 							    color: select_th_color(ta[0]),
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
 							show_data(WS, jsonData);
+						}
 							
+						if((menu==3 || menu==1)){
 							if(jsonData.message.Dm!= ""){
 								var dm = jsonData.message.Dm.split(".");
-								window.map.removeLayer(WS_Arrow);
-								window.map.removeLayer(WS_arrowHead);
-							   	WS_Arrow = L.polyline([WS_POS, get_wind_cord(WS_POS, ARROW_R, dm)], {}).addTo(map);
+								if(WS_Arrow!=null && WS_arrowHead!=null){
+									window.map.removeLayer(WS_Arrow);
+									window.map.removeLayer(WS_arrowHead);
+								}
+							   	WS_Arrow = L.polyline([WS_POS, get_wind_cord(WS_POS, ARROW_R, dm[0])], {}).addTo(map);
 							    WS_arrowHead = L.polylineDecorator(WS_Arrow).addTo(map);
+							}
+							if(jsonData.message.Sm!= ""){
+								var sm = jsonData.message.Sm.split("M");
+								if(anim_WS!=null){
+									clearInterval(anim_WS);
+								}
+							    anim_WS = window.setInterval(function() {
+							    	if(WS_Arrow!=null){
+							        	WS_arrowHead.setPatterns([
+							        		{offset: WS_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        	     ])
+	        	                        if(++WS_arrowOffset > 100)
+	        	                        	WS_arrowOffset = 0;
+							    	}
+							    }, get_wind_speed(sm[0]));
 							}
 						}
 					}else if(jsonData.message.Name == "TP"){
-						if(jsonData.message.Ta!=""){
+						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
 							var ta = jsonData.message.Ta.split(".");
-							window.map.removeLayer(TP_circle);
+							if(TP_circle!=null){
+								window.map.removeLayer(TP_circle);
+							}
 							TP_circle = L.circle(TP_POS, CIRCLE_R, {
 							    color: select_th_color(ta[0]),
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
 							show_data(TP, jsonData);
-							
+						}	
+						if((menu==3 || menu==1)){
 							if(jsonData.message.Dm!= ""){
 								var dm = jsonData.message.Dm.split(".");
-								window.map.removeLayer(TP_Arrow);
-								window.map.removeLayer(TP_arrowHead);
-							   	TP_Arrow = L.polyline([TP_POS, get_wind_cord(TP_POS, ARROW_R, dm)], {}).addTo(map);
+								if(TP_Arrow!=null && TP_arrowHead!=null){
+									window.map.removeLayer(TP_Arrow);
+									window.map.removeLayer(TP_arrowHead);
+								}
+							   	TP_Arrow = L.polyline([TP_POS, get_wind_cord(TP_POS, ARROW_R, dm[0])], {}).addTo(map);
 							    TP_arrowHead = L.polylineDecorator(TP_Arrow).addTo(map);
 							}
+							if(jsonData.message.Sm!= ""){
+								var sm = jsonData.message.Sm.split("M");
+								if(anim_TP!=null){
+									clearInterval(anim_TP);
+								}
+							    anim_TP = window.setInterval(function() {
+							    	if(TP_Arrow!=null){
+							        	TP_arrowHead.setPatterns([
+							        		{offset: TP_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        	     ])
+	        	                        if(++TP_arrowOffset > 100)
+	        	                        	TP_arrowOffset = 0;
+							    	}
+							    }, get_wind_speed(sm[0]));
+							}
 						}
-					}			
+					}else if(jsonData.message.Name == "BMR"){
+						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+							var ta = jsonData.message.Ta.split(".");
+							if(BMR_circle!=null){
+								window.map.removeLayer(BMR_circle);
+							}
+							BMR_circle = L.circle(BMR_POS, CIRCLE_R, {
+							    color: select_th_color(ta[0]),
+							    fillColor: select_th_color(ta[0]),
+							    fillOpacity: CIRCLE_T
+							}).addTo(map);
+							show_data(BMR, jsonData);
+						}
+							
+						if((menu==3 || menu==1)){
+							if(jsonData.message.Dm!= ""){
+								var dm = jsonData.message.Dm.split(".");
+								if(BMR_Arrow!=null && BMR_arrowHead!=null){
+									window.map.removeLayer(BMR_Arrow);
+									window.map.removeLayer(BMR_arrowHead);
+								}
+							   	BMR_Arrow = L.polyline([BMR_POS, get_wind_cord(BMR_POS, ARROW_R, dm[0])], {}).addTo(map);
+							    BMR_arrowHead = L.polylineDecorator(BMR_Arrow).addTo(map);
+							}
+							if(jsonData.message.Sm!= ""){
+								var sm = jsonData.message.Sm.split("M");
+								if(anim_BMR!=null){
+									clearInterval(anim_BMR);
+								}
+							    anim_BMR = window.setInterval(function() {
+							    	if(BMR_Arrow!=null){
+							        	BMR_arrowHead.setPatterns([
+							        		{offset: BMR_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        	     ])
+	        	                        if(++BMR_arrowOffset > 100)
+	        	                        	BMR_arrowOffset = 0;
+							    	}
+							    }, get_wind_speed(sm[0]));
+							}
+						}
+					}else if(jsonData.message.Name == "BH"){
+						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+							var ta = jsonData.message.Ta.split(".");
+							if(BH_circle!=null){
+								window.map.removeLayer(BH_circle);
+							}
+							BH_circle = L.circle(BH_POS, CIRCLE_R, {
+							    color: select_th_color(ta[0]),
+							    fillColor: select_th_color(ta[0]),
+							    fillOpacity: CIRCLE_T
+							}).addTo(map);
+							show_data(BH, jsonData);
+						}
+							
+						if((menu==3 || menu==1)){
+							if(jsonData.message.Dm!= ""){
+								var dm = jsonData.message.Dm.split(".");
+								if(BH_Arrow!=null && BH_arrowHead!=null){
+									window.map.removeLayer(BH_Arrow);
+									window.map.removeLayer(BH_arrowHead);
+								}
+							   	BH_Arrow = L.polyline([BH_POS, get_wind_cord(BH_POS, ARROW_R, dm[0])], {}).addTo(map);
+							    BH_arrowHead = L.polylineDecorator(BH_Arrow).addTo(map);
+							}
+							if(jsonData.message.Sm!= ""){
+								var sm = jsonData.message.Sm.split("M");
+								if(anim_BH!=null){
+									clearInterval(anim_BH);
+								}
+							    anim_BH = window.setInterval(function() {
+							    	if(BH_Arrow!=null){
+							        	BH_arrowHead.setPatterns([
+							        		{offset: BH_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        	     ])
+	        	                        if(++BH_arrowOffset > 100)
+	        	                        	BH_arrowOffset = 0;
+							    	}
+							    }, get_wind_speed(sm[0]));
+							}
+						}
+					}else if(jsonData.message.Name == "LP"){
+						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+							var ta = jsonData.message.Ta.split(".");
+							if(LP_circle!=null){
+								window.map.removeLayer(LP_circle);
+							}
+							LP_circle = L.circle(LP_POS, CIRCLE_R, {
+							    color: select_th_color(ta[0]),
+							    fillColor: select_th_color(ta[0]),
+							    fillOpacity: CIRCLE_T
+							}).addTo(map);
+							show_data(LP, jsonData);
+						}
+							
+						if((menu==3 || menu==1)){
+							if(jsonData.message.Dm!= ""){
+								var dm = jsonData.message.Dm.split(".");
+								if(LP_Arrow!=null && LP_arrowHead!=null){
+									window.map.removeLayer(LP_Arrow);
+									window.map.removeLayer(LP_arrowHead);
+								}
+							   	LP_Arrow = L.polyline([LP_POS, get_wind_cord(LP_POS, ARROW_R, dm[0])], {}).addTo(map);
+							    LP_arrowHead = L.polylineDecorator(LP_Arrow).addTo(map);
+							}
+							if(jsonData.message.Sm!= ""){
+								var sm = jsonData.message.Sm.split("M");
+								if(anim_LP!=null){
+									clearInterval(anim_LP);
+								}
+							    anim_LP = window.setInterval(function() {
+							    	if(LP_Arrow!=null){
+							        	LP_arrowHead.setPatterns([
+							        		{offset: LP_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        	     ])
+	        	                        if(++LP_arrowOffset > 100)
+	        	                        	LP_arrowOffset = 0;
+							    	}
+							    }, get_wind_speed(sm[0]));
+							}
+						}
+					}else if(jsonData.message.Name == "MG"){
+						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+							var ta = jsonData.message.Ta.split(".");
+							if(MG_circle!=null){
+								window.map.removeLayer(MG_circle);
+							}
+							MG_circle = L.circle(MG_POS, CIRCLE_R, {
+							    color: select_th_color(ta[0]),
+							    fillColor: select_th_color(ta[0]),
+							    fillOpacity: CIRCLE_T
+							}).addTo(map);
+							show_data(MG, jsonData);
+						}
+							
+						if((menu==3 || menu==1)){
+							if(jsonData.message.Dm!= ""){
+								var dm = jsonData.message.Dm.split(".");
+								if(MG_Arrow!=null && MG_arrowHead!=null){
+									window.map.removeLayer(MG_Arrow);
+									window.map.removeLayer(MG_arrowHead);
+								}
+							   	MG_Arrow = L.polyline([MG_POS, get_wind_cord(MG_POS, ARROW_R, dm[0])], {}).addTo(map);
+							    MG_arrowHead = L.polylineDecorator(MG_Arrow).addTo(map);
+							}
+							if(jsonData.message.Sm!= ""){
+								var sm = jsonData.message.Sm.split("M");
+								if(anim_MG!=null){
+									clearInterval(anim_MG);
+								}
+							    anim_MG = window.setInterval(function() {
+							    	if(MG_Arrow!=null){
+							        	MG_arrowHead.setPatterns([
+							        		{offset: MG_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        	     ])
+	        	                        if(++MG_arrowOffset > 100)
+	        	                        	MG_arrowOffset = 0;
+							    	}
+							    }, get_wind_speed(sm[0]));
+							}
+						}
+					}else if(jsonData.message.Name == "ML"){
+						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+							var ta = jsonData.message.Ta.split(".");
+							if(ML_circle!=null){
+								window.map.removeLayer(ML_circle);
+							}
+							ML_circle = L.circle(ML_POS, CIRCLE_R, {
+							    color: select_th_color(ta[0]),
+							    fillColor: select_th_color(ta[0]),
+							    fillOpacity: CIRCLE_T
+							}).addTo(map);
+							show_data(ML, jsonData);
+						}
+							
+						if((menu==3 || menu==1)){
+							if(jsonData.message.Dm!= ""){
+								var dm = jsonData.message.Dm.split(".");
+								if(ML_Arrow!=null && ML_arrowHead!=null){
+									window.map.removeLayer(ML_Arrow);
+									window.map.removeLayer(ML_arrowHead);
+								}
+							   	ML_Arrow = L.polyline([ML_POS, get_wind_cord(ML_POS, ARROW_R, dm[0])], {}).addTo(map);
+							    ML_arrowHead = L.polylineDecorator(ML_Arrow).addTo(map);
+							}
+							if(jsonData.message.Sm!= ""){
+								var sm = jsonData.message.Sm.split("M");
+								if(anim_ML!=null){
+									clearInterval(anim_ML);
+								}
+							    anim_ML = window.setInterval(function() {
+							    	if(ML_Arrow!=null){
+							        	ML_arrowHead.setPatterns([
+							        		{offset: ML_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        	     ])
+	        	                        if(++ML_arrowOffset > 100)
+	        	                        	ML_arrowOffset = 0;
+							    	}
+							    }, get_wind_speed(sm[0]));
+							}
+						}
+					}else if(jsonData.message.Name == "MW"){
+						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+							var ta = jsonData.message.Ta.split(".");
+							if(MW_circle!=null){
+								window.map.removeLayer(MW_circle);
+							}
+							MW_circle = L.circle(MW_POS, CIRCLE_R, {
+							    color: select_th_color(ta[0]),
+							    fillColor: select_th_color(ta[0]),
+							    fillOpacity: CIRCLE_T
+							}).addTo(map);
+							show_data(MW, jsonData);
+						}
+							
+						if((menu==3 || menu==1)){
+							if(jsonData.message.Dm!= ""){
+								var dm = jsonData.message.Dm.split(".");
+								if(MW_Arrow!=null && MW_arrowHead!=null){
+									window.map.removeLayer(MW_Arrow);
+									window.map.removeLayer(MW_arrowHead);
+								}
+							   	MW_Arrow = L.polyline([MW_POS, get_wind_cord(MW_POS, ARROW_R, dm[0])], {}).addTo(map);
+							    MW_arrowHead = L.polylineDecorator(MW_Arrow).addTo(map);
+							}
+							if(jsonData.message.Sm!= ""){
+								var sm = jsonData.message.Sm.split("M");
+								if(anim_MW!=null){
+									clearInterval(anim_MW);
+								}
+							    anim_MW = window.setInterval(function() {
+							    	if(MW_Arrow!=null){
+							        	MW_arrowHead.setPatterns([
+							        		{offset: MW_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        	     ])
+	        	                        if(++MW_arrowOffset > 100)
+	        	                        	MW_arrowOffset = 0;
+							    	}
+							    }, get_wind_speed(sm[0]));
+							}
+						}
+					}else if(jsonData.message.Name == "CNMZ3"){
+						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+							var ta = jsonData.message.Ta.split(".");
+							if(CNMZ3_circle!=null){
+								window.map.removeLayer(CNMZ3_circle);
+							}
+							CNMZ3_circle = L.circle(CNMZ3_POS, CIRCLE_R, {
+							    color: select_th_color(ta[0]),
+							    fillColor: select_th_color(ta[0]),
+							    fillOpacity: CIRCLE_T
+							}).addTo(map);
+							show_data(CNMZ3, jsonData);
+						}
+							
+						if((menu==3 || menu==1)){
+							if(jsonData.message.Dm!= ""){
+								var dm = jsonData.message.Dm.split(".");
+								if(CNMZ3_Arrow!=null && CNMZ3_arrowHead!=null){
+									window.map.removeLayer(CNMZ3_Arrow);
+									window.map.removeLayer(CNMZ3_arrowHead);
+								}
+							   	CNMZ3_Arrow = L.polyline([CNMZ3_POS, get_wind_cord(CNMZ3_POS, ARROW_R, dm[0])], {}).addTo(map);
+							    CNMZ3_arrowHead = L.polylineDecorator(CNMZ3_Arrow).addTo(map);
+							}
+							if(jsonData.message.Sm!= ""){
+								var sm = jsonData.message.Sm.split("M");
+								if(anim_CNMZ3!=null){
+									clearInterval(anim_CNMZ3);
+								}
+							    anim_CNMZ3 = window.setInterval(function() {
+							    	if(CNMZ3_Arrow!=null){
+							        	CNMZ3_arrowHead.setPatterns([
+							        		{offset: CNMZ3_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        	     ])
+	        	                        if(++CNMZ3_arrowOffset > 100)
+	        	                        	CNMZ3_arrowOffset = 0;
+							    	}
+							    }, get_wind_speed(sm[0]));
+							}
+						}
+					}else if(jsonData.message.Name == "NN"){
+						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+							var ta = jsonData.message.Ta.split(".");
+							if(NN_circle!=null){
+								window.map.removeLayer(NN_circle);
+							}
+							NN_circle = L.circle(NN_POS, CIRCLE_R, {
+							    color: select_th_color(ta[0]),
+							    fillColor: select_th_color(ta[0]),
+							    fillOpacity: CIRCLE_T
+							}).addTo(map);
+							show_data(NN, jsonData);
+						}
+							
+						if((menu==3 || menu==1)){
+							if(jsonData.message.Dm!= ""){
+								var dm = jsonData.message.Dm.split(".");
+								if(NN_Arrow!=null && NN_arrowHead!=null){
+									window.map.removeLayer(NN_Arrow);
+									window.map.removeLayer(NN_arrowHead);
+								}
+							   	NN_Arrow = L.polyline([NN_POS, get_wind_cord(NN_POS, ARROW_R, dm[0])], {}).addTo(map);
+							    NN_arrowHead = L.polylineDecorator(NN_Arrow).addTo(map);
+							}
+							if(jsonData.message.Sm!= ""){
+								var sm = jsonData.message.Sm.split("M");
+								if(anim_NN!=null){
+									clearInterval(anim_NN);
+								}
+							    anim_NN = window.setInterval(function() {
+							    	if(NN_Arrow!=null){
+							        	NN_arrowHead.setPatterns([
+							        		{offset: NN_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        	     ])
+	        	                        if(++NN_arrowOffset > 100)
+	        	                        	NN_arrowOffset = 0;
+							    	}
+							    }, get_wind_speed(sm[0]));
+							}
+						}
+					}else if(jsonData.message.Name == "PA"){
+						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+							var ta = jsonData.message.Ta.split(".");
+							if(PA_circle!=null){
+								window.map.removeLayer(PA_circle);
+							}
+							PA_circle = L.circle(PA_POS, CIRCLE_R, {
+							    color: select_th_color(ta[0]),
+							    fillColor: select_th_color(ta[0]),
+							    fillOpacity: CIRCLE_T
+							}).addTo(map);
+							show_data(PA, jsonData);
+						}
+							
+						if((menu==3 || menu==1)){
+							if(jsonData.message.Dm!= ""){
+								var dm = jsonData.message.Dm.split(".");
+								if(PA_Arrow!=null && PA_arrowHead!=null){
+									window.map.removeLayer(PA_Arrow);
+									window.map.removeLayer(PA_arrowHead);
+								}
+							   	PA_Arrow = L.polyline([PA_POS, get_wind_cord(PA_POS, ARROW_R, dm[0])], {}).addTo(map);
+							    PA_arrowHead = L.polylineDecorator(PA_Arrow).addTo(map);
+							}
+							if(jsonData.message.Sm!= ""){
+								var sm = jsonData.message.Sm.split("M");
+								if(anim_PA!=null){
+									clearInterval(anim_PA);
+								}
+							    anim_PA = window.setInterval(function() {
+							    	if(PA_Arrow!=null){
+							        	PA_arrowHead.setPatterns([
+							        		{offset: PA_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        	     ])
+	        	                        if(++PA_arrowOffset > 100)
+	        	                        	PA_arrowOffset = 0;
+							    	}
+							    }, get_wind_speed(sm[0]));
+							}
+						}
+					}else if(jsonData.message.Name == "PLC"){
+						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+							var ta = jsonData.message.Ta.split(".");
+							if(PLC_circle!=null){
+								window.map.removeLayer(PLC_circle);
+							}
+							PLC_circle = L.circle(PLC_POS, CIRCLE_R, {
+							    color: select_th_color(ta[0]),
+							    fillColor: select_th_color(ta[0]),
+							    fillOpacity: CIRCLE_T
+							}).addTo(map);
+							show_data(PLC, jsonData);
+						}
+							
+						if((menu==3 || menu==1)){
+							if(jsonData.message.Dm!= ""){
+								var dm = jsonData.message.Dm.split(".");
+								if(PLC_Arrow!=null && PLC_arrowHead!=null){
+									window.map.removeLayer(PLC_Arrow);
+									window.map.removeLayer(PLC_arrowHead);
+								}
+							   	PLC_Arrow = L.polyline([PLC_POS, get_wind_cord(PLC_POS, ARROW_R, dm[0])], {}).addTo(map);
+							    PLC_arrowHead = L.polylineDecorator(PLC_Arrow).addTo(map);
+							}
+							if(jsonData.message.Sm!= ""){
+								var sm = jsonData.message.Sm.split("M");
+								if(anim_PLC!=null){
+									clearInterval(anim_PLC);
+								}
+							    anim_PLC = window.setInterval(function() {
+							    	if(PLC_Arrow!=null){
+							        	PLC_arrowHead.setPatterns([
+							        		{offset: PLC_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        	     ])
+	        	                        if(++PLC_arrowOffset > 100)
+	        	                        	PLC_arrowOffset = 0;
+							    	}
+							    }, get_wind_speed(sm[0]));
+							}
+						}
+					}else if(jsonData.message.Name == "RM"){
+						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+							var ta = jsonData.message.Ta.split(".");
+							if(RM_circle!=null){
+								window.map.removeLayer(RM_circle);
+							}
+							RM_circle = L.circle(RM_POS, CIRCLE_R, {
+							    color: select_th_color(ta[0]),
+							    fillColor: select_th_color(ta[0]),
+							    fillOpacity: CIRCLE_T
+							}).addTo(map);
+							show_data(RM, jsonData);
+						}
+							
+						if((menu==3 || menu==1)){
+							if(jsonData.message.Dm!= ""){
+								var dm = jsonData.message.Dm.split(".");
+								if(RM_Arrow!=null && RM_arrowHead!=null){
+									window.map.removeLayer(RM_Arrow);
+									window.map.removeLayer(RM_arrowHead);
+								}
+							   	RM_Arrow = L.polyline([RM_POS, get_wind_cord(RM_POS, ARROW_R, dm[0])], {}).addTo(map);
+							    RM_arrowHead = L.polylineDecorator(RM_Arrow).addTo(map);
+							}
+							if(jsonData.message.Sm!= ""){
+								var sm = jsonData.message.Sm.split("M");
+								if(anim_RM!=null){
+									clearInterval(anim_RM);
+								}
+							    anim_RM = window.setInterval(function() {
+							    	if(RM_Arrow!=null){
+							        	RM_arrowHead.setPatterns([
+							        		{offset: RM_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        	     ])
+	        	                        if(++RM_arrowOffset > 100)
+	        	                        	RM_arrowOffset = 0;
+							    	}
+							    }, get_wind_speed(sm[0]));
+							}
+						}
+					}else if(jsonData.message.Name == "SCI"){
+						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+							var ta = jsonData.message.Ta.split(".");
+							if(SCI_circle!=null){
+								window.map.removeLayer(SCI_circle);
+							}
+							SCI_circle = L.circle(SCI_POS, CIRCLE_R, {
+							    color: select_th_color(ta[0]),
+							    fillColor: select_th_color(ta[0]),
+							    fillOpacity: CIRCLE_T
+							}).addTo(map);
+							show_data(SCI, jsonData);
+						}
+							
+						if((menu==3 || menu==1)){
+							if(jsonData.message.Dm!= ""){
+								var dm = jsonData.message.Dm.split(".");
+								if(SCI_Arrow!=null && SCI_arrowHead!=null){
+									window.map.removeLayer(SCI_Arrow);
+									window.map.removeLayer(SCI_arrowHead);
+								}
+							   	SCI_Arrow = L.polyline([SCI_POS, get_wind_cord(SCI_POS, ARROW_R, dm[0])], {}).addTo(map);
+							    SCI_arrowHead = L.polylineDecorator(SCI_Arrow).addTo(map);
+							}
+							if(jsonData.message.Sm!= ""){
+								var sm = jsonData.message.Sm.split("M");
+								if(anim_SCI!=null){
+									clearInterval(anim_SCI);
+								}
+							    anim_SCI = window.setInterval(function() {
+							    	if(SCI_Arrow!=null){
+							        	SCI_arrowHead.setPatterns([
+							        		{offset: SCI_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        	     ])
+	        	                        if(++SCI_arrowOffset > 100)
+	        	                        	SCI_arrowOffset = 0;
+							    	}
+							    }, get_wind_speed(sm[0]));
+							}
+						}
+					}else if(jsonData.message.Name == "SY"){
+						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+							var ta = jsonData.message.Ta.split(".");
+							if(SY_circle!=null){
+								window.map.removeLayer(SY_circle);
+							}
+							SY_circle = L.circle(SY_POS, CIRCLE_R, {
+							    color: select_th_color(ta[0]),
+							    fillColor: select_th_color(ta[0]),
+							    fillOpacity: CIRCLE_T
+							}).addTo(map);
+							show_data(SY, jsonData);
+						}
+							
+						if((menu==3 || menu==1)){
+							if(jsonData.message.Dm!= ""){
+								var dm = jsonData.message.Dm.split(".");
+								if(SY_Arrow!=null && SY_arrowHead!=null){
+									window.map.removeLayer(SY_Arrow);
+									window.map.removeLayer(SY_arrowHead);
+								}
+							   	SY_Arrow = L.polyline([SY_POS, get_wind_cord(SY_POS, ARROW_R, dm[0])], {}).addTo(map);
+							    SY_arrowHead = L.polylineDecorator(SY_Arrow).addTo(map);
+							}
+							if(jsonData.message.Sm!= ""){
+								var sm = jsonData.message.Sm.split("M");
+								if(anim_SY!=null){
+									clearInterval(anim_SY);
+								}
+							    anim_SY = window.setInterval(function() {
+							    	if(SY_Arrow!=null){
+							        	SY_arrowHead.setPatterns([
+							        		{offset: SY_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        	     ])
+	        	                        if(++SY_arrowOffset > 100)
+	        	                        	SY_arrowOffset = 0;
+							    	}
+							    }, get_wind_speed(sm[0]));
+							}
+						}
+					}else if(jsonData.message.Name == "SO"){
+						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+							var ta = jsonData.message.Ta.split(".");
+							if(SO_circle!=null){
+								window.map.removeLayer(SO_circle);
+							}
+							SO_circle = L.circle(SO_POS, CIRCLE_R, {
+							    color: select_th_color(ta[0]),
+							    fillColor: select_th_color(ta[0]),
+							    fillOpacity: CIRCLE_T
+							}).addTo(map);
+							show_data(SO, jsonData);
+						}
+							
+						if((menu==3 || menu==1)){
+							if(jsonData.message.Dm!= ""){
+								var dm = jsonData.message.Dm.split(".");
+								if(SO_Arrow!=null && SO_arrowHead!=null){
+									window.map.removeLayer(SO_Arrow);
+									window.map.removeLayer(SO_arrowHead);
+								}
+							   	SO_Arrow = L.polyline([SO_POS, get_wind_cord(SO_POS, ARROW_R, dm[0])], {}).addTo(map);
+							    SO_arrowHead = L.polylineDecorator(SO_Arrow).addTo(map);
+							}
+							if(jsonData.message.Sm!= ""){
+								var sm = jsonData.message.Sm.split("M");
+								if(anim_SO!=null){
+									clearInterval(anim_SO);
+								}
+							    anim_SO = window.setInterval(function() {
+							    	if(SO_Arrow!=null){
+							        	SO_arrowHead.setPatterns([
+							        		{offset: SO_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        	     ])
+	        	                        if(++SO_arrowOffset > 100)
+	        	                        	SO_arrowOffset = 0;
+							    	}
+							    }, get_wind_speed(sm[0]));
+							}
+						}
+					}else if(jsonData.message.Name == "SMERNS"){
+						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+							var ta = jsonData.message.Ta.split(".");
+							if(SMERNS_circle!=null){
+								window.map.removeLayer(SMERNS_circle);
+							}
+							SMERNS_circle = L.circle(SMERNS_POS, CIRCLE_R, {
+							    color: select_th_color(ta[0]),
+							    fillColor: select_th_color(ta[0]),
+							    fillOpacity: CIRCLE_T
+							}).addTo(map);
+							show_data(SMERNS, jsonData);
+						}
+							
+						if((menu==3 || menu==1)){
+							if(jsonData.message.Dm!= ""){
+								var dm = jsonData.message.Dm.split(".");
+								if(SMERNS_Arrow!=null && SMERNS_arrowHead!=null){
+									window.map.removeLayer(SMERNS_Arrow);
+									window.map.removeLayer(SMERNS_arrowHead);
+								}
+							   	SMERNS_Arrow = L.polyline([SMERNS_POS, get_wind_cord(SMERNS_POS, ARROW_R, dm[0])], {}).addTo(map);
+							    SMERNS_arrowHead = L.polylineDecorator(SMERNS_Arrow).addTo(map);
+							}
+							if(jsonData.message.Sm!= ""){
+								var sm = jsonData.message.Sm.split("M");
+								if(anim_SMERNS!=null){
+									clearInterval(anim_SMERNS);
+								}
+							    anim_SMERNS = window.setInterval(function() {
+							    	if(SMERNS_Arrow!=null){
+							        	SMERNS_arrowHead.setPatterns([
+							        		{offset: SMERNS_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        	     ])
+	        	                        if(++SMERNS_arrowOffset > 100)
+	        	                        	SMERNS_arrowOffset = 0;
+							    	}
+							    }, get_wind_speed(sm[0]));
+							}
+						}
+					}else if(jsonData.message.Name == "HWB"){
+						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+							var ta = jsonData.message.Ta.split(".");
+							if(HWB_circle!=null){
+								window.map.removeLayer(HWB_circle);
+							}
+							HWB_circle = L.circle(HWB_POS, CIRCLE_R, {
+							    color: select_th_color(ta[0]),
+							    fillColor: select_th_color(ta[0]),
+							    fillOpacity: CIRCLE_T
+							}).addTo(map);
+							show_data(HWB, jsonData);
+						}
+							
+						if((menu==3 || menu==1)){
+							if(jsonData.message.Dm!= ""){
+								var dm = jsonData.message.Dm.split(".");
+								if(HWB_Arrow!=null && HWB_arrowHead!=null){
+									window.map.removeLayer(HWB_Arrow);
+									window.map.removeLayer(HWB_arrowHead);
+								}
+							   	HWB_Arrow = L.polyline([HWB_POS, get_wind_cord(HWB_POS, ARROW_R, dm[0])], {}).addTo(map);
+							    HWB_arrowHead = L.polylineDecorator(HWB_Arrow).addTo(map);
+							}
+							if(jsonData.message.Sm!= ""){
+								var sm = jsonData.message.Sm.split("M");
+								if(anim_HWB!=null){
+									clearInterval(anim_HWB);
+								}
+							    anim_HWB = window.setInterval(function() {
+							    	if(HWB_Arrow!=null){
+							        	HWB_arrowHead.setPatterns([
+							        		{offset: HWB_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        	     ])
+	        	                        if(++HWB_arrowOffset > 100)
+	        	                        	HWB_arrowOffset = 0;
+							    	}
+							    }, get_wind_speed(sm[0]));
+							}
+						}
+					}
 				}
  
 			}
