@@ -33,80 +33,77 @@ public class WebSocketEndPoint {
 	
 
 	String host_sdsc = "172.16.42.86";
-	String group_sdsc = "233.7.117.107";
-	int port_sdsc = 4034;
+	String group_sdsc = "233.7.117.110";
+	int port_sdsc = 4038;
 	
 	String host_ws = "172.16.42.86";
-	String group_ws = "233.7.117.125";
-	int port_ws = 4045;
+	String group_ws = "233.7.117.119";
+	int port_ws = 4043;
 		
 	String host_tp = "172.16.42.86";
-	String group_tp = "233.7.117.111";
-	int port_tp = 4039;
+	String group_tp = "233.7.117.102";
+	int port_tp = 4037;
 	
 	String host_bmr = "172.16.42.86";
-	String group_bmr = "233.7.117.111";
-	int port_bmr = 4039;
+	String group_bmr = "233.7.117.125";
+	int port_bmr = 4045;
 	
 	String host_bh = "172.16.42.86";
-	String group_bh = "233.7.117.111";
-	int port_bh = 4039;
+	String group_bh = "233.7.117.114";
+	int port_bh = 4042;
 	
 	String host_lp = "172.16.42.86";
-	String group_lp = "233.7.117.111";
-	int port_lp = 4039;
+	String group_lp = "233.7.117.79";
+	int port_lp = 4020;
 	
-	String host_mg = "172.16.42.86";
-	String group_mg = "233.7.117.111";
-	int port_mg = 4039;
 	
 	String host_ml = "172.16.42.86";
 	String group_ml = "233.7.117.111";
 	int port_ml = 4039;
 	
 	String host_mw = "172.16.42.86";
-	String group_mw = "233.7.117.111";
-	int port_mw = 4039;
+	String group_mw = "233.7.117.79";
+	int port_mw = 4024;
 	
 	String host_cnmz3 = "172.16.42.86";
 	String group_cnmz3 = "233.7.117.111";
 	int port_cnmz3 = 4039;
 	
 	String host_nn = "172.16.42.86";
-	String group_nn = "233.7.117.111";
-	int port_nn = 4039;
+	String group_nn = "233.7.117.82";
+	int port_nn = 4026;
 	
 	String host_pa = "172.16.42.86";
-	String group_pa = "233.7.117.111";
-	int port_pa = 4039;
+	String group_pa = "233.7.117.104";
+	int port_pa = 4031;
 	
 	String host_plc = "172.16.42.86";
-	String group_plc = "233.7.117.111";
-	int port_plc = 4039;
+	String group_plc = "233.7.117.123";
+	int port_plc = 4044;
 
 	String host_rm = "172.16.42.86";
-	String group_rm = "233.7.117.111";
-	int port_rm = 4039;
+	String group_rm = "233.7.117.106";
+	int port_rm = 4033;
 	
 	String host_sci = "172.16.42.86";
-	String group_sci = "233.7.117.111";
-	int port_sci = 4039;
+	String group_sci = "233.7.117.107";
+	int port_sci = 4034;
 	
 	String host_sy = "172.16.42.86";
 	String group_sy = "233.7.117.111";
 	int port_sy = 4039;
 	
 	String host_so = "172.16.42.86";
-	String group_so = "233.7.117.111";
-	int port_so = 4039;
+	String group_so = "233.7.117.113";
+	int port_so = 4041;
 	
 	String host_smerns = "172.16.42.86";
-	String group_smerns = "233.7.117.111";
-	int port_smerns = 4039;
+	String group_smerns = "233.7.117.128";
+	int port_smerns = 4046;
 	
 	String host_hwb = "172.16.42.86";
-	String group_hwb = "233.7.117.111";
-	int port_hwb = 4039;
+	String group_hwb = "233.7.117.79";
+	int port_hwb = 4010;
 	
 	NewThread SDSC;
 	NewThread WS;
@@ -123,7 +120,6 @@ public class WebSocketEndPoint {
 	NewThread PLC;
 	NewThread RM;
 	NewThread SCI;
-	NewThread SY;
 	NewThread SO;
 	NewThread SMERNS;
 	NewThread HWB;
@@ -194,7 +190,6 @@ public class WebSocketEndPoint {
 		 BMR.stop();
 		 BH.stop();
 		 LP.stop();
-		 MG.stop();
 		 ML.stop();
 		 MW.stop();
 		 CNMZ3.stop();
@@ -203,7 +198,6 @@ public class WebSocketEndPoint {
 		 PLC.stop();
 		 RM.stop();
 		 SCI.stop();
-		 SY.stop();
 		 SO.stop();
 		 SMERNS.stop();
 		 HWB.stop();
@@ -224,7 +218,6 @@ public class WebSocketEndPoint {
 			 BMR.stop();
 			 BH.stop();
 			 LP.stop();
-			 MG.stop();
 			 ML.stop();
 			 MW.stop();
 			 CNMZ3.stop();
@@ -233,7 +226,6 @@ public class WebSocketEndPoint {
 			 PLC.stop();
 			 RM.stop();
 			 SCI.stop();
-			 SY.stop();
 			 SO.stop();
 			 SMERNS.stop();
 			 HWB.stop();
@@ -252,68 +244,61 @@ public class WebSocketEndPoint {
 			TP.start();
 			
 			Stations BMR_Station = new Stations("BMR");
-			TP = new NewThread("BMR", host_bmr, group_bmr, port_bmr, userSession, BMR_Station);
-			TP.start();
+			BMR = new NewThread("BMR", host_bmr, group_bmr, port_bmr, userSession, BMR_Station);
+			BMR.start();
 			
 			Stations BH_Station = new Stations("BH");
-			TP = new NewThread("BH", host_bh, group_bh, port_bh, userSession, BH_Station);
-			TP.start();
+			BH = new NewThread("BH", host_bh, group_bh, port_bh, userSession, BH_Station);
+			BH.start();
 			
 			Stations LP_Station = new Stations("LP");
-			TP = new NewThread("LP", host_lp, group_lp, port_lp, userSession, LP_Station);
-			TP.start();
+			LP = new NewThread("LP", host_lp, group_lp, port_lp, userSession, LP_Station);
+			LP.start();
 			
-			Stations MG_Station = new Stations("MG");
-			TP = new NewThread("MG", host_mg, group_mg, port_mg, userSession, MG_Station);
-			TP.start();
 			
 			Stations ML_Station = new Stations("ML");
-			TP = new NewThread("ML", host_ml, group_ml, port_ml, userSession, ML_Station);
-			TP.start();
+			ML = new NewThread("ML", host_ml, group_ml, port_ml, userSession, ML_Station);
+			ML.start();
 			
 			Stations MW_Station = new Stations("MW");
-			TP = new NewThread("MW", host_mw, group_mw, port_mw, userSession, MW_Station);
-			TP.start();
+			MW = new NewThread("MW", host_mw, group_mw, port_mw, userSession, MW_Station);
+			MW.start();
 			
 			Stations CNMZ3_Station = new Stations("CNMZ3");
-			TP = new NewThread("CNMZ3", host_cnmz3, group_cnmz3, port_cnmz3, userSession, CNMZ3_Station);
-			TP.start();
+			CNMZ3 = new NewThread("CNMZ3", host_cnmz3, group_cnmz3, port_cnmz3, userSession, CNMZ3_Station);
+			CNMZ3.start();
 			
 			Stations NN_Station = new Stations("NN");
-			TP = new NewThread("NN", host_nn, group_nn, port_nn, userSession, NN_Station);
-			TP.start();
+			NN = new NewThread("NN", host_nn, group_nn, port_nn, userSession, NN_Station);
+			NN.start();
 			
 			Stations PA_Station = new Stations("PA");
-			TP = new NewThread("PA", host_pa, group_pa, port_pa, userSession, PA_Station);
-			TP.start();
+			PA = new NewThread("PA", host_pa, group_pa, port_pa, userSession, PA_Station);
+			PA.start();
 			
 			Stations PLC_Station = new Stations("PLC");
-			TP = new NewThread("PLC", host_plc, group_plc, port_plc, userSession, PLC_Station);
-			TP.start();
+			PLC = new NewThread("PLC", host_plc, group_plc, port_plc, userSession, PLC_Station);
+			PLC.start();
 			
 			Stations RM_Station = new Stations("RM");
-			TP = new NewThread("RM", host_rm, group_rm, port_rm, userSession, RM_Station);
-			TP.start();
+			RM = new NewThread("RM", host_rm, group_rm, port_rm, userSession, RM_Station);
+			RM.start();
 			
 			Stations SCI_Station = new Stations("SCI");
-			TP = new NewThread("SCI", host_sci, group_sci, port_sci, userSession, SCI_Station);
-			TP.start();
+			SCI = new NewThread("SCI", host_sci, group_sci, port_sci, userSession, SCI_Station);
+			SCI.start();
 			
 			Stations SMERNS_Station = new Stations("SMERNS");
-			TP = new NewThread("SMERNS", host_smerns, group_smerns, port_smerns, userSession, SMERNS_Station);
-			TP.start();
-			
-			Stations SY_Station = new Stations("SY");
-			TP = new NewThread("SY", host_sy, group_sy, port_sy, userSession, SY_Station);
-			TP.start();
+			SMERNS = new NewThread("SMERNS", host_smerns, group_smerns, port_smerns, userSession, SMERNS_Station);
+			SMERNS.start();
 			
 			Stations SO_Station = new Stations("SO");
-			TP = new NewThread("SO", host_so, group_so, port_so, userSession, SO_Station);
-			TP.start();
+			SO = new NewThread("SO", host_so, group_so, port_so, userSession, SO_Station);
+			SO.start();
 			
 			Stations HWB_Station = new Stations("HWB");
-			TP = new NewThread("HWB", host_hwb, group_hwb, port_hwb, userSession, HWB_Station);
-			TP.start();
+			HWB = new NewThread("HWB", host_hwb, group_hwb, port_hwb, userSession, HWB_Station);
+			HWB.start();
 		}
 
 	}
