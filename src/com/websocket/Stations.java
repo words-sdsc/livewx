@@ -80,154 +80,178 @@ public class Stations {
 		return name;
 	}
 	public void setSn(String SN){
-		sn = SN;
+		if(!SN.contains("#")){
+			sn = SN;
+		}
 	}
 	public String getSn(){
 		return sn;
 	}
 
 	public void setSm(String SM){
-		sm = SM;
+		if(!SM.contains("#")){
+			sm = SM;
+		}
 	}
 	public String getSm(){
 		return sm;
 	}
 
 	public void setSx(String SX){
-		sx = SX;
+		if(!SX.contains("#"))
+			sx = SX;
 	}
 	public String getSx(){
 		return sx;
 	}
 
 	public void setDn(String DN){
-		dn = DN;
+		if(!DN.contains("#"))
+			dn = DN;
 	}
 	public String getDn(){
 		return dn;
 	}
 
 	public void setDm(String DM){
-		dm = DM;
+		if(!DM.contains("#"))
+			dm = DM;
 	}
 	public String getDm(){
 		return dm;
 	}
 
 	public void setDx(String DX){
-		dx = DX;
+		if(!DX.contains("#"))
+			dx = DX;
 	}
 	public String getDx(){
 		return dx;
 	}
 
 	public void setPa(String PA){
-		pa = PA;
+		if(!PA.contains("#"))
+			pa = PA;
 	}
 	public String getPa(){
 		return pa;
 	}
 
 	public void setTa(String TA){
-		ta = TA;
+		if(!TA.contains("#"))
+			ta = TA;
 	}
 	public String getTa(){
 		return ta;
 	}
 
 	public void setTp(String TP){
-		tp = TP;
+		if(!TP.contains("#"))
+			tp = TP;
 	}
 	public String getTp(){
 		return tp;
 	}
 
 	public void setUa(String UA){
-		ua = UA;
+		if(!UA.contains("#"))
+			ua = UA;
 	}
 	public String getUa(){
 		return ua;
 	}
 
 	public void setRc(String RC){
-		rc = RC;
+		if(!RC.contains("#"))
+			rc = RC;
 	}
 	public String getRc(){
 		return rc;
 	}
 
 	public void setRd(String RD){
-		rd = RD;
+		if(!RD.contains("#"))
+			rd = RD;
 	}
 	public String getRd(){
 		return rd;
 	}
 
 	public void setRi(String RI){
-		ri = RI;
+		if(!RI.contains("#"))
+			ri = RI;
 	}
 	public String getRi(){
 		return ri;
 	}
 
 	public void setRp(String RP){
-		rp = RP;
+		if(!RP.contains("#"))
+			rp = RP;
 	}
 	public String getRp(){
 		return rp;
 	}
 
 	public void setHc(String HC){
-		hc = HC;
+		if(!HC.contains("#"))
+			hc = HC;
 	}
 	public String getHc(){
 		return hc;
 	}
 
 	public void setHd(String HD){
-		hd = HD;
+		if(!HD.contains("#"))
+			hd = HD;
 	}
 	public String getHd(){
 		return hd;
 	}
 
 	public void setHi(String HI){
-		hi = HI;
+		if(!HI.contains("#"))
+			hi = HI;
 	}
 	public String getHi(){
 		return hi;
 	}
 
 	public void setHp(String HP){
-		hp = HP;
+		if(!HP.contains("#"))
+			hp = HP;
 	}
 	public String getHp(){
 		return hp;
 	}
 
 	public void setTh(String TH){
-		th = TH;
+		if(!TH.contains("#"))
+			th = TH;
 	}
 	public String getTh(){
 		return th;
 	}
 
 	public void setVh(String VH){
-		vh = VH;
+		if(!VH.contains("#"))
+			vh = VH;
 	}
 	public String getVh(){
 		return vh;
 	}
 
 	public void setVs(String VS){
-		vs = VS;
+		if(!VS.contains("#"))
+			vs = VS;
 	}
 	public String getVs(){
 		return vs;
 	}
 
 	public void setVr(String VR){
-		vr = VR;
+		if(!VR.contains("#"))
+			vr = VR;
 	}
 	public String getVr(){
 		return vr;
