@@ -22,16 +22,20 @@
 		
 	<input onchange="checkLayer()" type = "checkbox" name = "menu" id = "wind" value = 1 checked>wind</input>
 	<input onchange="checkLayer()" type = "checkbox" name = "menu" id = "temperature" value = 2 checked>temperature</input>
+	<input onchange="checkLayer()" type = "checkbox" name = "menu" id = "humidity" value = 5 checked>humidity</input>
 	<br>
 	<div id="map" style="width: 1200px; height: 600px; border: 1px solid #ccc"></div>
 	
 	<script type="text/javascript" >
-	var menu = 3;
+	var wind_opt = true;
+	var temperature_opt = true;
+	var humidity_opt = true;
 	
 	function checkLayer(){
 		menu = 0;
 
 		if(!document.getElementById("wind").checked){
+			wind_opt = false;
 			if(SDSC_Arrow!=null && SDSC_arrowHead!=null){
 				window.map.removeLayer(SDSC_Arrow);
 				window.map.removeLayer(SDSC_arrowHead);
@@ -107,6 +111,7 @@
 
 		}
 		if(!document.getElementById("temperature").checked){
+			temperature_opt = false;
 			if(SDSC_circle!=null)
 				window.map.removeLayer(SDSC_circle);
 			if(BMR_circle!=null)
@@ -141,14 +146,58 @@
 				window.map.removeLayer(TP_circle);
 			if(WS_circle!=null)
 				window.map.removeLayer(WS_circle);
-			if(HBW_circle!=null)
-				window.map.removeLayer(HBW_circle);
+			if(HWB_circle!=null){
+				window.map.removeLayer(HWB_circle);
+			}
+		}
+		if(!document.getElementById("humidity").checked){
+			humidity_opt = false;
+
+			window.map.removeLayer(SDSC);
+			SDSC = new L.marker(SDSC_POS, { icon: L.letterIcon('SDSC', { radius: 15 }), clickable: true }).addTo(map);
+			window.map.removeLayer(WS);
+		    WS = new L.marker(WS_POS, { icon: L.letterIcon('WS', { radius: 15 }), clickable: true }).addTo(map);
+		    window.map.removeLayer(TP);
+		    TP = new L.marker(TP_POS, { icon: L.letterIcon('TP', { radius: 15 }), clickable: true }).addTo(map);
+		    window.map.removeLayer(BMR);
+		    BMR = new L.marker(BMR_POS, { icon: L.letterIcon('BMR', { radius: 15 }), clickable: true }).addTo(map);
+		    window.map.removeLayer(BH);
+		    BH = new L.marker(BH_POS, { icon: L.letterIcon('BH', { radius: 15 }), clickable: true }).addTo(map);
+		    window.map.removeLayer(LP);
+		    LP = new L.marker(LP_POS, { icon: L.letterIcon('LP', { radius: 15 }), clickable: true }).addTo(map);
+		    window.map.removeLayer(MG);
+		    MG = new L.marker(MG_POS, { icon: L.letterIcon('MG', { radius: 15 }), clickable: true }).addTo(map);
+		    window.map.removeLayer(ML);
+		    ML = new L.marker(ML_POS, { icon: L.letterIcon('ML', { radius: 15 }), clickable: true }).addTo(map);
+		    window.map.removeLayer(MW);
+		    MW = new L.marker(MW_POS, { icon: L.letterIcon('MW', { radius: 15 }), clickable: true }).addTo(map);
+		    window.map.removeLayer(CNMZ3);
+		    CNMZ3 = new L.marker(CNMZ3_POS, { icon: L.letterIcon('CNMZ3', { radius: 15 }), clickable: true }).addTo(map);
+		    window.map.removeLayer(PA);
+		    PA = new L.marker(PA_POS, { icon: L.letterIcon('PA', { radius: 15 }), clickable: true }).addTo(map);
+		    window.map.removeLayer(PLC);
+		    PLC = new L.marker(PLC_POS, { icon: L.letterIcon('PLC', { radius: 15 }), clickable: true }).addTo(map);
+		    window.map.removeLayer(RM);
+		    RM = new L.marker(RM_POS, { icon: L.letterIcon('RM', { radius: 15 }), clickable: true }).addTo(map);
+		    window.map.removeLayer(SCI);
+		    SCI = new L.marker(SCI_POS, { icon: L.letterIcon('SCI', { radius: 15 }), clickable: true }).addTo(map);
+		    window.map.removeLayer(SY);
+		    SY = new L.marker(SY_POS, { icon: L.letterIcon('SY', { radius: 15 }), clickable: true }).addTo(map);
+		    window.map.removeLayer(SO);
+		    SO = new L.marker(SO_POS, { icon: L.letterIcon('SO', { radius: 15 }), clickable: true }).addTo(map);
+		    window.map.removeLayer(SMERNS);
+		    SMERNS = new L.marker(SMERNS_POS, { icon: L.letterIcon('SMERNS', { radius: 15 }), clickable: true }).addTo(map);
+		    window.map.removeLayer(HWB);
+		    HWB = new L.marker(HWB_POS, { icon: L.letterIcon('HWB', { radius: 15 }), clickable: true }).addTo(map);
 		}
 		if(document.getElementById("wind").checked){
-			menu = 1;
+			wind_opt = true;
 		}		
 		if(document.getElementById("temperature").checked){
-			menu += 2;
+			temperature_opt = true;
+		}
+		if(document.getElementById("humidity").checked){
+			humidity_opt = true;
 		}
 	}
 	
@@ -260,7 +309,6 @@
     var CNMZ3_arrowOffset = 0;
     var anim_CNMZ3 = null;
     
-    
     PA = new L.marker(PA_POS, { icon: L.letterIcon('PA', { radius: 15 }), clickable: true }).addTo(map).bindPopup("Loading Data...");
 	var PA_circle = null;
     var PA_Arrow = null;
@@ -337,8 +385,32 @@
 			webSocket.onclose =  function(message){processClose(message);};
 			webSocket.onerror =  function(message){processError(message);};
 			
+			get_humidity_color = function(ua){
+				if(ua == "") return '#FFFFFF';
+				if(ua<=10){
+					return '#ff0000';
+				}else if(ua>10 && ua<=20){
+					return '#ff9966';
+				}else if(ua>20 && ua<=30){
+					return '#ffcc99';
+				}else if(ua>30 && ua<=40){
+					return '#ccffff';
+				}else if(ua>40 && ua<=50){
+					return '#99ccff';
+				}else if(ua>50 && ua<=60){
+					return '#6699ff';
+				}else if(ua>60 && ua<=70){
+					return '#3366ff';
+				}else if(ua>70 && ua<=80){
+					return '#3333ff';
+				}else if(ua>80 && ua<=90){
+					return '#0000cc';
+				}else{
+					return '#000066';
+				}
+			}
 			select_th_color = function(th){
-				
+				if(th == "") return "#FFFFFF";
 				if(th<-10){
 					return "#000066"
 				}else if(th>=-10 && th<-7){
@@ -393,37 +465,31 @@
 			info_output = function(jsonData){
 				
 				return (
-				"Sn: "+jsonData.message.Sn+"<br />"+
-				"Sm: "+jsonData.message.Sm+"<br />"+
-				"Sx: "+jsonData.message.Sx+"<br />"+
-				"Dn: "+jsonData.message.Dn+"<br />"+
-				"Dm: "+jsonData.message.Dm+"<br />"+
-				"Dx: "+jsonData.message.Dx+"<br />"+
-				"Pa: "+jsonData.message.Pa+"<br />"+
-				"Ta: "+jsonData.message.Ta+"<br />"+
-				"Tp: "+jsonData.message.Tp+"<br />"+
-				"Ua: "+jsonData.message.Ua+"<br />"+
-				"Rc: "+jsonData.message.Rc+"<br />"+
-				"Rd: "+jsonData.message.Rd+"<br />"+
-				"Ri: "+jsonData.message.Ri+"<br />"+
-				"Rp: "+jsonData.message.Rp+"<br />"+
-				"Hc: "+jsonData.message.Hc+"<br />"+
-				"Hd: "+jsonData.message.Hd+"<br />"+
-				"Hi: "+jsonData.message.Hi+"<br />"+
-				"Hp: "+jsonData.message.Hp+"<br />"+
-				"Th: "+jsonData.message.Th+"<br />"+
-				"Vh: "+jsonData.message.Vh+"<br />"+
-				"Vs: "+jsonData.message.Vs+"<br />"+
-				"Vr: "+jsonData.message.Vr)
+						"<table>"+
+							"<tr>"+
+								"<th>Wind Average Speed(SM)</th>"+
+								"<th>Wind Average Direction(DM)</th>"+
+								"<th>Air Temperature(TA)</th>"+
+								"<th>Relative Humidity(UA)</th>"+
+							"</tr>"+
+							"<tr>"+
+								"<td>"+jsonData.message.Sm+"</td>"+
+								"<td>"+jsonData.message.Dm+"</td>"+
+								"<td>"+jsonData.message.Ta+"</td>"+
+								"<td>"+jsonData.message.Ua+"</td>"+
+							"</tr>"+
+						"</table>");
 			}
 			show_data = function (station, jsonData){
-				var popup = station.getPopup();
-				if(popup._isOpen){
-					station.closePopup();
-					station.bindPopup(info_output(jsonData));
-					station.openPopup();
-				}else{
-					SDSC.bindPopup(info_output(jsonData));
+				var popup = station.getPopup(); 
+				if(popup!=null){
+					if(popup._isOpen){
+						station.closePopup();
+						station.bindPopup(info_output(jsonData));
+						station.openPopup();
+					}else{
+						SDSC.bindPopup(info_output(jsonData));
+					}
 				}
 			}
 			get_wind_cord = function(origin, r, degree){
@@ -437,7 +503,7 @@
 				if(jsonData.message != null){
 					if(jsonData.message.Name == "SDSC"){
 						show_data(SDSC, jsonData);
-						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
 							if(SDSC_circle!=null){
 								window.map.removeLayer(SDSC_circle);
@@ -447,18 +513,30 @@
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
-						}			
-						if((menu==3 || menu==1)){
-							if(jsonData.message.Dm!= ""){
-								var dm = jsonData.message.Dm.split(".");
+						}	
+						if(humidity_opt && jsonData.message.Ua!=""){
+							var ua = jsonData.message.Ua.split("P");
+							var opened = false;
+							if(SDSC.getPopup()!=null){
+								opened = SDSC.getPopup()._isOpen;
+							}
+							window.map.removeLayer(SDSC);
+							SDSC = new L.marker(SDSC_POS, { icon: L.letterIcon('SDSC <br>'+parseFloat(ua[0])+"%", 
+										{ radius: 15, color:  get_humidity_color(parseFloat(ua[0]))}), clickable: true })
+							.addTo(map).bindPopup(info_output(jsonData));
+							if(opened){
+								SDSC.openPopup();
+							}
+						}
+						if(wind_opt){
+							if(jsonData.message.Dm!= "" && jsonData.message.Sm!= ""){
+								var dm = jsonData.message.Dm.split("D");
 								if(SDSC_Arrow!=null && SDSC_arrowHead!=null){
 									window.map.removeLayer(SDSC_Arrow);
 									window.map.removeLayer(SDSC_arrowHead);
 								}
-							   	SDSC_Arrow = L.polyline([SDSC_POS, get_wind_cord(SDSC_POS, ARROW_R, dm[0])], {}).addTo(map);
+							   	SDSC_Arrow = L.polyline([SDSC_POS, get_wind_cord(SDSC_POS, ARROW_R, parseFloat(dm[0]))], {}).addTo(map);
 							    SDSC_arrowHead = L.polylineDecorator(SDSC_Arrow).addTo(map);
-							}
-							if(jsonData.message.Sm!= ""){
 								var sm = jsonData.message.Sm.split("M");
 								if(anim_SDSC!=null){
 									clearInterval(anim_SDSC);
@@ -471,13 +549,13 @@
 	        	                        if(++SDSC_arrowOffset > 100)
 	        	                        	SDSC_arrowOffset = 0;
 							    	}
-							    }, get_wind_speed(sm[0]));
+							    }, get_wind_speed(parseFloat(sm[0])));
 							}
 						}
 						
 					}else if(jsonData.message.Name == "WS"){
 						show_data(WS, jsonData);
-						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
 							if(WS_circle!=null){
 								window.map.removeLayer(WS_circle);
@@ -488,18 +566,29 @@
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
 						}
-							
-						if((menu==3 || menu==1)){
-							if(jsonData.message.Dm!= ""){
-								var dm = jsonData.message.Dm.split(".");
+						if(humidity_opt && jsonData.message.Ua!=""){
+							var ua = jsonData.message.Ua.split("P");
+							var opened = false;
+							if(WS.getPopup()!=null){
+								opened = WS.getPopup()._isOpen;
+							}
+							window.map.removeLayer(WS);
+							WS = new L.marker(WS_POS, { icon: L.letterIcon('WS <br>'+parseFloat(ua[0])+"%", 
+										{ radius: 15, color:  get_humidity_color(parseFloat(ua[0]))}), clickable: true })
+							.addTo(map).bindPopup(info_output(jsonData));
+							if(opened){
+								WS.openPopup();
+							}
+						}
+						if(wind_opt){
+							if(jsonData.message.Dm!= "" && jsonData.message.Sm!= ""){
+								var dm = jsonData.message.Dm.split("D");
 								if(WS_Arrow!=null && WS_arrowHead!=null){
 									window.map.removeLayer(WS_Arrow);
 									window.map.removeLayer(WS_arrowHead);
 								}
-							   	WS_Arrow = L.polyline([WS_POS, get_wind_cord(WS_POS, ARROW_R, dm[0])], {}).addTo(map);
+							   	WS_Arrow = L.polyline([WS_POS, get_wind_cord(WS_POS, ARROW_R, parseFloat(dm[0]))], {}).addTo(map);
 							    WS_arrowHead = L.polylineDecorator(WS_Arrow).addTo(map);
-							}
-							if(jsonData.message.Sm!= ""){
 								var sm = jsonData.message.Sm.split("M");
 								if(anim_WS!=null){
 									clearInterval(anim_WS);
@@ -512,12 +601,12 @@
 	        	                        if(++WS_arrowOffset > 100)
 	        	                        	WS_arrowOffset = 0;
 							    	}
-							    }, get_wind_speed(sm[0]));
+							    }, get_wind_speed(parseFloat(sm[0])));
 							}
 						}
 					}else if(jsonData.message.Name == "TP"){
 						show_data(TP, jsonData);
-						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
 							if(TP_circle!=null){
 								window.map.removeLayer(TP_circle);
@@ -528,17 +617,29 @@
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
 						}	
-						if((menu==3 || menu==1)){
-							if(jsonData.message.Dm!= ""){
-								var dm = jsonData.message.Dm.split(".");
+						if(humidity_opt && jsonData.message.Ua!=""){
+							var ua = jsonData.message.Ua.split("P");
+							var opened = false;
+							if(TP.getPopup()!=null){
+								opened = TP.getPopup()._isOpen;
+							}
+							window.map.removeLayer(TP);
+							TP = new L.marker(TP_POS, { icon: L.letterIcon('TP <br>'+parseFloat(ua[0])+"%", 
+										{ radius: 15, color:  get_humidity_color(parseFloat(ua[0]))}), clickable: true })
+							.addTo(map).bindPopup(info_output(jsonData));
+							if(opened){
+								TP.openPopup();
+							}
+						}
+						if(wind_opt){
+							if(jsonData.message.Dm!= "" && jsonData.message.Sm!= ""){
+								var dm = jsonData.message.Dm.split("D");
 								if(TP_Arrow!=null && TP_arrowHead!=null){
 									window.map.removeLayer(TP_Arrow);
 									window.map.removeLayer(TP_arrowHead);
 								}
-							   	TP_Arrow = L.polyline([TP_POS, get_wind_cord(TP_POS, ARROW_R, dm[0])], {}).addTo(map);
+							   	TP_Arrow = L.polyline([TP_POS, get_wind_cord(TP_POS, ARROW_R, parseFloat(dm[0]))], {}).addTo(map);
 							    TP_arrowHead = L.polylineDecorator(TP_Arrow).addTo(map);
-							}
-							if(jsonData.message.Sm!= ""){
 								var sm = jsonData.message.Sm.split("M");
 								if(anim_TP!=null){
 									clearInterval(anim_TP);
@@ -551,12 +652,12 @@
 	        	                        if(++TP_arrowOffset > 100)
 	        	                        	TP_arrowOffset = 0;
 							    	}
-							    }, get_wind_speed(sm[0]));
+							    }, get_wind_speed(parseFloat(sm[0])));
 							}
 						}
 					}else if(jsonData.message.Name == "BMR"){
 						show_data(BMR, jsonData);
-						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
 							if(BMR_circle!=null){
 								window.map.removeLayer(BMR_circle);
@@ -567,18 +668,29 @@
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
 						}
-							
-						if((menu==3 || menu==1)){
-							if(jsonData.message.Dm!= ""){
-								var dm = jsonData.message.Dm.split(".");
+						if(humidity_opt && jsonData.message.Ua!=""){
+							var ua = jsonData.message.Ua.split("P");
+							var opened = false;
+							if(BMR.getPopup()!=null){
+								opened = BMR.getPopup()._isOpen;
+							}
+							window.map.removeLayer(BMR);
+							BMR = new L.marker(BMR_POS, { icon: L.letterIcon('BMR <br>'+parseFloat(ua[0])+"%", 
+										{ radius: 15, color:  get_humidity_color(parseFloat(ua[0]))}), clickable: true })
+							.addTo(map).bindPopup(info_output(jsonData));
+							if(opened){
+								BMR.openPopup();
+							}
+						}	
+						if(wind_opt){
+							if(jsonData.message.Dm!= "" && jsonData.message.Sm!= ""){
+								var dm = jsonData.message.Dm.split("D");
 								if(BMR_Arrow!=null && BMR_arrowHead!=null){
 									window.map.removeLayer(BMR_Arrow);
 									window.map.removeLayer(BMR_arrowHead);
 								}
-							   	BMR_Arrow = L.polyline([BMR_POS, get_wind_cord(BMR_POS, ARROW_R, dm[0])], {}).addTo(map);
+							   	BMR_Arrow = L.polyline([BMR_POS, get_wind_cord(BMR_POS, ARROW_R, parseFloat(dm[0]))], {}).addTo(map);
 							    BMR_arrowHead = L.polylineDecorator(BMR_Arrow).addTo(map);
-							}
-							if(jsonData.message.Sm!= ""){
 								var sm = jsonData.message.Sm.split("M");
 								if(anim_BMR!=null){
 									clearInterval(anim_BMR);
@@ -591,12 +703,12 @@
 	        	                        if(++BMR_arrowOffset > 100)
 	        	                        	BMR_arrowOffset = 0;
 							    	}
-							    }, get_wind_speed(sm[0]));
+							    }, get_wind_speed(parseFloat(sm[0])));
 							}
 						}
 					}else if(jsonData.message.Name == "BH"){
 						show_data(BH, jsonData);
-						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
 							if(BH_circle!=null){
 								window.map.removeLayer(BH_circle);
@@ -607,18 +719,29 @@
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
 						}
-							
-						if((menu==3 || menu==1)){
-							if(jsonData.message.Dm!= ""){
-								var dm = jsonData.message.Dm.split(".");
+						if(humidity_opt && jsonData.message.Ua!=""){
+							var ua = jsonData.message.Ua.split("P");
+							var opened = false;
+							if(BH.getPopup()!=null){
+								opened = BH.getPopup()._isOpen;
+							}
+							window.map.removeLayer(BH);
+							BH = new L.marker(BH_POS, { icon: L.letterIcon('BH <br>'+parseFloat(ua[0])+"%", 
+										{ radius: 15, color:  get_humidity_color(parseFloat(ua[0]))}), clickable: true })
+							.addTo(map).bindPopup(info_output(jsonData));
+							if(opened){
+								BH.openPopup();
+							}
+						}
+						if(wind_opt){
+							if(jsonData.message.Dm!= "" && jsonData.message.Sm!= ""){
+								var dm = jsonData.message.Dm.split("D");
 								if(BH_Arrow!=null && BH_arrowHead!=null){
 									window.map.removeLayer(BH_Arrow);
 									window.map.removeLayer(BH_arrowHead);
 								}
-							   	BH_Arrow = L.polyline([BH_POS, get_wind_cord(BH_POS, ARROW_R, dm[0])], {}).addTo(map);
+							   	BH_Arrow = L.polyline([BH_POS, get_wind_cord(BH_POS, ARROW_R, parseFloat(dm[0]))], {}).addTo(map);
 							    BH_arrowHead = L.polylineDecorator(BH_Arrow).addTo(map);
-							}
-							if(jsonData.message.Sm!= ""){
 								var sm = jsonData.message.Sm.split("M");
 								if(anim_BH!=null){
 									clearInterval(anim_BH);
@@ -631,12 +754,12 @@
 	        	                        if(++BH_arrowOffset > 100)
 	        	                        	BH_arrowOffset = 0;
 							    	}
-							    }, get_wind_speed(sm[0]));
+							    }, get_wind_speed(parseFloat(sm[0])));
 							}
 						}
 					}else if(jsonData.message.Name == "LP"){
 						show_data(LP, jsonData);
-						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
 							if(LP_circle!=null){
 								window.map.removeLayer(LP_circle);
@@ -647,18 +770,29 @@
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
 						}
-							
-						if((menu==3 || menu==1)){
-							if(jsonData.message.Dm!= ""){
-								var dm = jsonData.message.Dm.split(".");
+						if(humidity_opt && jsonData.message.Ua!=""){
+							var ua = jsonData.message.Ua.split("P");
+							var opened = false;
+							if(LP.getPopup()!=null){
+								opened = LP.getPopup()._isOpen;
+							}
+							window.map.removeLayer(LP);
+							LP = new L.marker(LP_POS, { icon: L.letterIcon('LP <br>'+parseFloat(ua[0])+"%", 
+										{ radius: 15, color:  get_humidity_color(parseFloat(ua[0]))}), clickable: true })
+							.addTo(map).bindPopup(info_output(jsonData));
+							if(opened){
+								LP.openPopup();
+							}
+						}
+						if(wind_opt){
+							if(jsonData.message.Dm!= "" && jsonData.message.Sm!= ""){
+								var dm = jsonData.message.Dm.split("D");
 								if(LP_Arrow!=null && LP_arrowHead!=null){
 									window.map.removeLayer(LP_Arrow);
 									window.map.removeLayer(LP_arrowHead);
 								}
-							   	LP_Arrow = L.polyline([LP_POS, get_wind_cord(LP_POS, ARROW_R, dm[0])], {}).addTo(map);
+							   	LP_Arrow = L.polyline([LP_POS, get_wind_cord(LP_POS, ARROW_R, parseFloat(dm[0]))], {}).addTo(map);
 							    LP_arrowHead = L.polylineDecorator(LP_Arrow).addTo(map);
-							}
-							if(jsonData.message.Sm!= ""){
 								var sm = jsonData.message.Sm.split("M");
 								if(anim_LP!=null){
 									clearInterval(anim_LP);
@@ -671,12 +805,12 @@
 	        	                        if(++LP_arrowOffset > 100)
 	        	                        	LP_arrowOffset = 0;
 							    	}
-							    }, get_wind_speed(sm[0]));
+							    }, get_wind_speed(parseFloat(sm[0])));
 							}
 						}
 					}else if(jsonData.message.Name == "MG"){
 						show_data(MG, jsonData);
-						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
 							if(MG_circle!=null){
 								window.map.removeLayer(MG_circle);
@@ -687,18 +821,29 @@
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
 						}
-							
-						if((menu==3 || menu==1)){
-							if(jsonData.message.Dm!= ""){
-								var dm = jsonData.message.Dm.split(".");
+						if(humidity_opt && jsonData.message.Ua!=""){
+							var ua = jsonData.message.Ua.split("P");
+							var opened = false;
+							if(MG.getPopup()!=null){
+								opened = MG.getPopup()._isOpen;
+							}
+							window.map.removeLayer(MG);
+							MG = new L.marker(MG_POS, { icon: L.letterIcon('MG <br>'+parseFloat(ua[0])+"%", 
+										{ radius: 15, color:  get_humidity_color(parseFloat(ua[0]))}), clickable: true })
+							.addTo(map).bindPopup(info_output(jsonData));
+							if(opened){
+								MG.openPopup();
+							}
+						}
+						if(wind_opt){
+							if(jsonData.message.Dm!= "" && jsonData.message.Sm!= ""){
+								var dm = jsonData.message.Dm.split("D");
 								if(MG_Arrow!=null && MG_arrowHead!=null){
 									window.map.removeLayer(MG_Arrow);
 									window.map.removeLayer(MG_arrowHead);
 								}
-							   	MG_Arrow = L.polyline([MG_POS, get_wind_cord(MG_POS, ARROW_R, dm[0])], {}).addTo(map);
+							   	MG_Arrow = L.polyline([MG_POS, get_wind_cord(MG_POS, ARROW_R, parseFloat(dm[0]))], {}).addTo(map);
 							    MG_arrowHead = L.polylineDecorator(MG_Arrow).addTo(map);
-							}
-							if(jsonData.message.Sm!= ""){
 								var sm = jsonData.message.Sm.split("M");
 								if(anim_MG!=null){
 									clearInterval(anim_MG);
@@ -711,12 +856,12 @@
 	        	                        if(++MG_arrowOffset > 100)
 	        	                        	MG_arrowOffset = 0;
 							    	}
-							    }, get_wind_speed(sm[0]));
+							    }, get_wind_speed(parseFloat(sm[0])));
 							}
 						}
 					}else if(jsonData.message.Name == "ML"){
 						show_data(ML, jsonData)
-						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
 							if(ML_circle!=null){
 								window.map.removeLayer(ML_circle);
@@ -727,18 +872,29 @@
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);;
 						}
-							
-						if((menu==3 || menu==1)){
-							if(jsonData.message.Dm!= ""){
-								var dm = jsonData.message.Dm.split(".");
+						if(humidity_opt && jsonData.message.Ua!=""){
+							var ua = jsonData.message.Ua.split("P");
+							var opened = false;
+							if(ML.getPopup()!=null){
+								opened = ML.getPopup()._isOpen;
+							}
+							window.map.removeLayer(ML);
+							ML = new L.marker(ML_POS, { icon: L.letterIcon('ML <br>'+parseFloat(ua[0])+"%", 
+										{ radius: 15, color:  get_humidity_color(parseFloat(ua[0]))}), clickable: true })
+							.addTo(map).bindPopup(info_output(jsonData));
+							if(opened){
+								ML.openPopup();
+							}
+						}	
+						if(wind_opt){
+							if(jsonData.message.Dm!= "" && jsonData.message.Sm!= ""){
+								var dm = jsonData.message.Dm.split("D");
 								if(ML_Arrow!=null && ML_arrowHead!=null){
 									window.map.removeLayer(ML_Arrow);
 									window.map.removeLayer(ML_arrowHead);
 								}
-							   	ML_Arrow = L.polyline([ML_POS, get_wind_cord(ML_POS, ARROW_R, dm[0])], {}).addTo(map);
+							   	ML_Arrow = L.polyline([ML_POS, get_wind_cord(ML_POS, ARROW_R, parseFloat(dm[0]))], {}).addTo(map);
 							    ML_arrowHead = L.polylineDecorator(ML_Arrow).addTo(map);
-							}
-							if(jsonData.message.Sm!= ""){
 								var sm = jsonData.message.Sm.split("M");
 								if(anim_ML!=null){
 									clearInterval(anim_ML);
@@ -751,12 +907,12 @@
 	        	                        if(++ML_arrowOffset > 100)
 	        	                        	ML_arrowOffset = 0;
 							    	}
-							    }, get_wind_speed(sm[0]));
+							    }, get_wind_speed(parseFloat(sm[0])));
 							}
 						}
 					}else if(jsonData.message.Name == "MW"){
 						show_data(MW, jsonData);
-						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
 							if(MW_circle!=null){
 								window.map.removeLayer(MW_circle);
@@ -767,18 +923,29 @@
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
 						}
-							
-						if((menu==3 || menu==1)){
-							if(jsonData.message.Dm!= ""){
-								var dm = jsonData.message.Dm.split(".");
+						if(humidity_opt && jsonData.message.Ua!=""){
+							var ua = jsonData.message.Ua.split("P");
+							var opened = false;
+							if(MW.getPopup()!=null){
+								opened = MW.getPopup()._isOpen;
+							}
+							window.map.removeLayer(MW);
+							MW = new L.marker(MW_POS, { icon: L.letterIcon('MW <br>'+parseFloat(ua[0])+"%", 
+										{ radius: 15, color:  get_humidity_color(parseFloat(ua[0]))}), clickable: true })
+							.addTo(map).bindPopup(info_output(jsonData));
+							if(opened){
+								MW.openPopup();
+							}
+						}
+						if(wind_opt){
+							if(jsonData.message.Dm!= "" && jsonData.message.Sm!= ""){
+								var dm = jsonData.message.Dm.split("D");
 								if(MW_Arrow!=null && MW_arrowHead!=null){
 									window.map.removeLayer(MW_Arrow);
 									window.map.removeLayer(MW_arrowHead);
 								}
-							   	MW_Arrow = L.polyline([MW_POS, get_wind_cord(MW_POS, ARROW_R, dm[0])], {}).addTo(map);
+							   	MW_Arrow = L.polyline([MW_POS, get_wind_cord(MW_POS, ARROW_R, parseFloat(dm[0]))], {}).addTo(map);
 							    MW_arrowHead = L.polylineDecorator(MW_Arrow).addTo(map);
-							}
-							if(jsonData.message.Sm!= ""){
 								var sm = jsonData.message.Sm.split("M");
 								if(anim_MW!=null){
 									clearInterval(anim_MW);
@@ -791,12 +958,12 @@
 	        	                        if(++MW_arrowOffset > 100)
 	        	                        	MW_arrowOffset = 0;
 							    	}
-							    }, get_wind_speed(sm[0]));
+							    }, get_wind_speed(parseFloat(sm[0])));
 							}
 						}
 					}else if(jsonData.message.Name == "CNMZ3"){
 						show_data(CNMZ3, jsonData);
-						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
 							if(CNMZ3_circle!=null){
 								window.map.removeLayer(CNMZ3_circle);
@@ -806,19 +973,33 @@
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
+							show_data(CNMZ3, jsonData);
 						}
+						if(humidity_opt && jsonData.message.Ua!=""){
+							var ua = jsonData.message.Ua.split("P");
 							
-						if((menu==3 || menu==1)){
-							if(jsonData.message.Dm!= ""){
-								var dm = jsonData.message.Dm.split(".");
+							var opened = false;
+							if(CNMZ3.getPopup()!=null){
+								opened = CNMZ3.getPopup()._isOpen;
+							}
+							window.map.removeLayer(CNMZ3);
+							CNMZ3 = new L.marker(CNMZ3_POS, { icon: L.letterIcon('CNMZ3 <br>'+parseFloat(ua[0])+"%", 
+										{ radius: 15, color:  get_humidity_color(parseFloat(ua[0]))}), clickable: true })
+							.addTo(map).bindPopup(info_output(jsonData));
+							if(opened){
+								CNMZ3.openPopup();
+							}
+						}
+						
+						if(wind_opt){
+							if(jsonData.message.Dm!= "" && jsonData.message.Sm!= ""){
+								var dm = jsonData.message.Dm.split("D");
 								if(CNMZ3_Arrow!=null && CNMZ3_arrowHead!=null){
 									window.map.removeLayer(CNMZ3_Arrow);
 									window.map.removeLayer(CNMZ3_arrowHead);
 								}
-							   	CNMZ3_Arrow = L.polyline([CNMZ3_POS, get_wind_cord(CNMZ3_POS, ARROW_R, dm[0])], {}).addTo(map);
+							   	CNMZ3_Arrow = L.polyline([CNMZ3_POS, get_wind_cord(CNMZ3_POS, ARROW_R, parseFloat(dm[0]))], {}).addTo(map);
 							    CNMZ3_arrowHead = L.polylineDecorator(CNMZ3_Arrow).addTo(map);
-							}
-							if(jsonData.message.Sm!= ""){
 								var sm = jsonData.message.Sm.split("M");
 								if(anim_CNMZ3!=null){
 									clearInterval(anim_CNMZ3);
@@ -831,12 +1012,12 @@
 	        	                        if(++CNMZ3_arrowOffset > 100)
 	        	                        	CNMZ3_arrowOffset = 0;
 							    	}
-							    }, get_wind_speed(sm[0]));
+							    }, get_wind_speed(parseFloat(sm[0])));
 							}
 						}
 					}else if(jsonData.message.Name == "PA"){
 						show_data(PA, jsonData);
-						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
 							if(PA_circle!=null){
 								window.map.removeLayer(PA_circle);
@@ -847,18 +1028,29 @@
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
 						}
-							
-						if((menu==3 || menu==1)){
-							if(jsonData.message.Dm!= ""){
-								var dm = jsonData.message.Dm.split(".");
+						if(humidity_opt && jsonData.message.Ua!=""){
+							var ua = jsonData.message.Ua.split("P");
+							var opened = false;
+							if(PA.getPopup()!=null){
+								opened = PA.getPopup()._isOpen;
+							}
+							window.map.removeLayer(PA);
+							PA = new L.marker(PA_POS, { icon: L.letterIcon('PA <br>'+parseFloat(ua[0])+"%", 
+										{ radius: 15, color:  get_humidity_color(parseFloat(ua[0]))}), clickable: true })
+							.addTo(map).bindPopup(info_output(jsonData));
+							if(opened){
+								PA.openPopup();
+							}
+						}
+						if(wind_opt){
+							if(jsonData.message.Dm!= "" && jsonData.message.Sm!= ""){
+								var dm = jsonData.message.Dm.split("D");
 								if(PA_Arrow!=null && PA_arrowHead!=null){
 									window.map.removeLayer(PA_Arrow);
 									window.map.removeLayer(PA_arrowHead);
 								}
-							   	PA_Arrow = L.polyline([PA_POS, get_wind_cord(PA_POS, ARROW_R, dm[0])], {}).addTo(map);
+							   	PA_Arrow = L.polyline([PA_POS, get_wind_cord(PA_POS, ARROW_R, parseFloat(dm[0]))], {}).addTo(map);
 							    PA_arrowHead = L.polylineDecorator(PA_Arrow).addTo(map);
-							}
-							if(jsonData.message.Sm!= ""){
 								var sm = jsonData.message.Sm.split("M");
 								if(anim_PA!=null){
 									clearInterval(anim_PA);
@@ -871,12 +1063,12 @@
 	        	                        if(++PA_arrowOffset > 100)
 	        	                        	PA_arrowOffset = 0;
 							    	}
-							    }, get_wind_speed(sm[0]));
+							    }, get_wind_speed(parseFloat(sm[0])));
 							}
 						}
 					}else if(jsonData.message.Name == "PLC"){
 						show_data(PLC, jsonData);
-						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
 							if(PLC_circle!=null){
 								window.map.removeLayer(PLC_circle);
@@ -887,19 +1079,30 @@
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
 						}
-							
-						if((menu==3 || menu==1)){
-							if(jsonData.message.Dm!= ""){
-								var dm = jsonData.message.Dm.split(".");
+						if(humidity_opt && jsonData.message.Ua!=""){
+							var ua = jsonData.message.Ua.split("P");
+							var opened = false;
+							if(PLC.getPopup()!=null){
+								opened = PLC.getPopup()._isOpen;
+							}
+							window.map.removeLayer(PLC);
+							PLC = new L.marker(PLC_POS, { icon: L.letterIcon('PLC <br>'+parseFloat(ua[0])+"%", 
+										{ radius: 15, color:  get_humidity_color(parseFloat(ua[0]))}), clickable: true })
+							.addTo(map).bindPopup(info_output(jsonData));
+							if(opened){
+								PLC.openPopup();
+							}
+						}
+						if(wind_opt){
+							if(jsonData.message.Dm!= "" && jsonData.message.Sm!= ""){
+								var dm = jsonData.message.Dm.split("D");
 								if(PLC_Arrow!=null && PLC_arrowHead!=null){
 									window.map.removeLayer(PLC_Arrow);
 									window.map.removeLayer(PLC_arrowHead);
 								}
-							   	PLC_Arrow = L.polyline([PLC_POS, get_wind_cord(PLC_POS, ARROW_R, dm[0])], {}).addTo(map);
+							   	PLC_Arrow = L.polyline([PLC_POS, get_wind_cord(PLC_POS, ARROW_R, parseFloat(dm[0]))], {}).addTo(map);
 							    PLC_arrowHead = L.polylineDecorator(PLC_Arrow).addTo(map);
-							}
-							if(jsonData.message.Sm!= ""){
-								var sm = jsonData.message.Sm.split("M");
+							    var sm = jsonData.message.Sm.split("M");
 								if(anim_PLC!=null){
 									clearInterval(anim_PLC);
 								}
@@ -911,12 +1114,12 @@
 	        	                        if(++PLC_arrowOffset > 100)
 	        	                        	PLC_arrowOffset = 0;
 							    	}
-							    }, get_wind_speed(sm[0]));
+							    }, get_wind_speed(parseFloat(sm[0])));
 							}
 						}
 					}else if(jsonData.message.Name == "RM"){
 						show_data(RM, jsonData);
-						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
 							if(RM_circle!=null){
 								window.map.removeLayer(RM_circle);
@@ -927,18 +1130,29 @@
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
 						}
-							
-						if((menu==3 || menu==1)){
-							if(jsonData.message.Dm!= ""){
-								var dm = jsonData.message.Dm.split(".");
+						if(humidity_opt && jsonData.message.Ua!=""){
+							var ua = jsonData.message.Ua.split("P");
+							var opened = false;
+							if(RM.getPopup()!=null){
+								opened = RM.getPopup()._isOpen;
+							}
+							window.map.removeLayer(RM);
+							RM = new L.marker(RM_POS, { icon: L.letterIcon('RM <br>'+parseFloat(ua[0])+"%", 
+										{ radius: 15, color:  get_humidity_color(parseFloat(ua[0]))}), clickable: true })
+							.addTo(map).bindPopup(info_output(jsonData));
+							if(opened){
+								RM.openPopup();
+							}
+						}
+						if(wind_opt){
+							if(jsonData.message.Dm!= "" && jsonData.message.Sm!= ""){
+								var dm = jsonData.message.Dm.split("D");
 								if(RM_Arrow!=null && RM_arrowHead!=null){
 									window.map.removeLayer(RM_Arrow);
 									window.map.removeLayer(RM_arrowHead);
 								}
-							   	RM_Arrow = L.polyline([RM_POS, get_wind_cord(RM_POS, ARROW_R, dm[0])], {}).addTo(map);
+							   	RM_Arrow = L.polyline([RM_POS, get_wind_cord(RM_POS, ARROW_R, parseFloat(dm[0]))], {}).addTo(map);
 							    RM_arrowHead = L.polylineDecorator(RM_Arrow).addTo(map);
-							}
-							if(jsonData.message.Sm!= ""){
 								var sm = jsonData.message.Sm.split("M");
 								if(anim_RM!=null){
 									clearInterval(anim_RM);
@@ -951,12 +1165,12 @@
 	        	                        if(++RM_arrowOffset > 100)
 	        	                        	RM_arrowOffset = 0;
 							    	}
-							    }, get_wind_speed(sm[0]));
+							    }, get_wind_speed(parseFloat(sm[0])));
 							}
 						}
 					}else if(jsonData.message.Name == "SCI"){
 						show_data(SCI, jsonData);
-						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
 							if(SCI_circle!=null){
 								window.map.removeLayer(SCI_circle);
@@ -967,18 +1181,29 @@
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
 						}
-							
-						if((menu==3 || menu==1)){
-							if(jsonData.message.Dm!= ""){
-								var dm = jsonData.message.Dm.split(".");
+						if(humidity_opt && jsonData.message.Ua!=""){
+							var ua = jsonData.message.Ua.split("P");
+							var opened = false;
+							if(SCI.getPopup()!=null){
+								opened = SCI.getPopup()._isOpen;
+							}
+							window.map.removeLayer(SCI);
+							SCI = new L.marker(SCI_POS, { icon: L.letterIcon('SCI <br>'+parseFloat(ua[0])+"%", 
+										{ radius: 15, color:  get_humidity_color(parseFloat(ua[0]))}), clickable: true })
+							.addTo(map).bindPopup(info_output(jsonData));
+							if(opened){
+								SCI.openPopup();
+							}
+						}
+						if(wind_opt){
+							if(jsonData.message.Dm!= "" && jsonData.message.Sm!= ""){
+								var dm = jsonData.message.Dm.split("D");
 								if(SCI_Arrow!=null && SCI_arrowHead!=null){
 									window.map.removeLayer(SCI_Arrow);
 									window.map.removeLayer(SCI_arrowHead);
 								}
-							   	SCI_Arrow = L.polyline([SCI_POS, get_wind_cord(SCI_POS, ARROW_R, dm[0])], {}).addTo(map);
+							   	SCI_Arrow = L.polyline([SCI_POS, get_wind_cord(SCI_POS, ARROW_R, parseFloat(dm[0]))], {}).addTo(map);
 							    SCI_arrowHead = L.polylineDecorator(SCI_Arrow).addTo(map);
-							}
-							if(jsonData.message.Sm!= ""){
 								var sm = jsonData.message.Sm.split("M");
 								if(anim_SCI!=null){
 									clearInterval(anim_SCI);
@@ -991,12 +1216,12 @@
 	        	                        if(++SCI_arrowOffset > 100)
 	        	                        	SCI_arrowOffset = 0;
 							    	}
-							    }, get_wind_speed(sm[0]));
+							    }, get_wind_speed(parseFloat(sm[0])));
 							}
 						}
 					}else if(jsonData.message.Name == "SY"){
 						show_data(SY, jsonData)
-						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
 							if(SY_circle!=null){
 								window.map.removeLayer(SY_circle);
@@ -1007,18 +1232,29 @@
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);;
 						}
-							
-						if((menu==3 || menu==1)){
-							if(jsonData.message.Dm!= ""){
-								var dm = jsonData.message.Dm.split(".");
+						if(humidity_opt && jsonData.message.Ua!=""){
+							var ua = jsonData.message.Ua.split("P");
+							var opened = false;
+							if(SY.getPopup()!=null){
+								opened = SY.getPopup()._isOpen;
+							}
+							window.map.removeLayer(SY);
+							SY = new L.marker(SY_POS, { icon: L.letterIcon('SY <br>'+parseFloat(ua[0])+"%", 
+										{ radius: 15, color:  get_humidity_color(parseFloat(ua[0]))}), clickable: true })
+							.addTo(map).bindPopup(info_output(jsonData));
+							if(opened){
+								SY.openPopup();
+							}
+						}
+						if(wind_opt){
+							if(jsonData.message.Dm!= "" && jsonData.message.Sm!= ""){
+								var dm = jsonData.message.Dm.split("D");
 								if(SY_Arrow!=null && SY_arrowHead!=null){
 									window.map.removeLayer(SY_Arrow);
 									window.map.removeLayer(SY_arrowHead);
 								}
-							   	SY_Arrow = L.polyline([SY_POS, get_wind_cord(SY_POS, ARROW_R, dm[0])], {}).addTo(map);
-							    SY_arrowHead = L.polylineDecorator(SY_Arrow).addTo(map);
-							}
-							if(jsonData.message.Sm!= ""){
+							   	SY_Arrow = L.polyline([SY_POS, get_wind_cord(SY_POS, ARROW_R, parseFloat(dm[0]))], {}).addTo(map);
+							    SY_arrowHead = L.polylineDecorator(SY_Arrow).addTo(map)
 								var sm = jsonData.message.Sm.split("M");
 								if(anim_SY!=null){
 									clearInterval(anim_SY);
@@ -1031,12 +1267,12 @@
 	        	                        if(++SY_arrowOffset > 100)
 	        	                        	SY_arrowOffset = 0;
 							    	}
-							    }, get_wind_speed(sm[0]));
+							    }, get_wind_speed(parseFloat(sm[0])));;
 							}
 						}
 					}else if(jsonData.message.Name == "SO"){
 						show_data(SO, jsonData)
-						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
 							if(SO_circle!=null){
 								window.map.removeLayer(SO_circle);
@@ -1047,18 +1283,29 @@
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);;
 						}
-							
-						if((menu==3 || menu==1)){
-							if(jsonData.message.Dm!= ""){
-								var dm = jsonData.message.Dm.split(".");
+						if(humidity_opt && jsonData.message.Ua!=""){
+							var ua = jsonData.message.Ua.split("P");
+							var opened = false;
+							if(SO.getPopup()!=null){
+								opened = SO.getPopup()._isOpen;
+							}
+							window.map.removeLayer(SO);
+							SO = new L.marker(SO_POS, { icon: L.letterIcon('SO <br>'+parseFloat(ua[0])+"%", 
+										{ radius: 15, color:  get_humidity_color(parseFloat(ua[0]))}), clickable: true })
+							.addTo(map).bindPopup(info_output(jsonData));
+							if(opened){
+								SO.openPopup();
+							}
+						}
+						if(wind_opt){
+							if(jsonData.message.Dm!= "" && jsonData.message.Sm!= ""){
+								var dm = jsonData.message.Dm.split("D");
 								if(SO_Arrow!=null && SO_arrowHead!=null){
 									window.map.removeLayer(SO_Arrow);
 									window.map.removeLayer(SO_arrowHead);
 								}
-							   	SO_Arrow = L.polyline([SO_POS, get_wind_cord(SO_POS, ARROW_R, dm[0])], {}).addTo(map);
+							   	SO_Arrow = L.polyline([SO_POS, get_wind_cord(SO_POS, ARROW_R, parseFloat(dm[0]))], {}).addTo(map);
 							    SO_arrowHead = L.polylineDecorator(SO_Arrow).addTo(map);
-							}
-							if(jsonData.message.Sm!= ""){
 								var sm = jsonData.message.Sm.split("M");
 								if(anim_SO!=null){
 									clearInterval(anim_SO);
@@ -1071,12 +1318,12 @@
 	        	                        if(++SO_arrowOffset > 100)
 	        	                        	SO_arrowOffset = 0;
 							    	}
-							    }, get_wind_speed(sm[0]));
+							    }, get_wind_speed(parseFloat(sm[0])));
 							}
 						}
 					}else if(jsonData.message.Name == "SMERNS"){
 						show_data(SMERNS, jsonData)
-						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
 							if(SMERNS_circle!=null){
 								window.map.removeLayer(SMERNS_circle);
@@ -1087,18 +1334,29 @@
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);;
 						}
-							
-						if((menu==3 || menu==1)){
-							if(jsonData.message.Dm!= ""){
-								var dm = jsonData.message.Dm.split(".");
+						if(humidity_opt && jsonData.message.Ua!=""){
+							var ua = jsonData.message.Ua.split("P");
+							var opened = false;
+							if(SMERNS.getPopup()!=null){
+								opened = SMERNS.getPopup()._isOpen;
+							}
+							window.map.removeLayer(SMERNS);
+							SMERNS = new L.marker(SMERNS_POS, { icon: L.letterIcon('SMERNS <br>'+parseFloat(ua[0])+"%", 
+										{ radius: 15, color:  get_humidity_color(parseFloat(ua[0]))}), clickable: true })
+							.addTo(map).bindPopup(info_output(jsonData));
+							if(opened){
+								SMERNS.openPopup();
+							}
+						}
+						if(wind_opt){
+							if(jsonData.message.Dm!= "" && jsonData.message.Sm!= ""){
+								var dm = jsonData.message.Dm.split("D");
 								if(SMERNS_Arrow!=null && SMERNS_arrowHead!=null){
 									window.map.removeLayer(SMERNS_Arrow);
 									window.map.removeLayer(SMERNS_arrowHead);
 								}
-							   	SMERNS_Arrow = L.polyline([SMERNS_POS, get_wind_cord(SMERNS_POS, ARROW_R, dm[0])], {}).addTo(map);
+							   	SMERNS_Arrow = L.polyline([SMERNS_POS, get_wind_cord(SMERNS_POS, ARROW_R, parseFloat(dm[0]))], {}).addTo(map);
 							    SMERNS_arrowHead = L.polylineDecorator(SMERNS_Arrow).addTo(map);
-							}
-							if(jsonData.message.Sm!= ""){
 								var sm = jsonData.message.Sm.split("M");
 								if(anim_SMERNS!=null){
 									clearInterval(anim_SMERNS);
@@ -1111,12 +1369,12 @@
 	        	                        if(++SMERNS_arrowOffset > 100)
 	        	                        	SMERNS_arrowOffset = 0;
 							    	}
-							    }, get_wind_speed(sm[0]));
+							    }, get_wind_speed(parseFloat(sm[0])));
 							}
 						}
 					}else if(jsonData.message.Name == "HWB"){
 						show_data(HWB, jsonData);
-						if(jsonData.message.Ta!="" && (menu==3 || menu==2)){
+						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
 							if(HWB_circle!=null){
 								window.map.removeLayer(HWB_circle);
@@ -1127,18 +1385,29 @@
 							    fillOpacity: CIRCLE_T
 							}).addTo(map);
 						}
-							
-						if((menu==3 || menu==1)){
-							if(jsonData.message.Dm!= ""){
-								var dm = jsonData.message.Dm.split(".");
+						if(humidity_opt && jsonData.message.Ua!=""){
+							var ua = jsonData.message.Ua.split("P");
+							var opened = false;
+							if(HWB.getPopup()!=null){
+								opened = HWB.getPopup()._isOpen;
+							}
+							window.map.removeLayer(HWB);
+							HWB = new L.marker(HWB_POS, { icon: L.letterIcon('HWB <br>'+parseFloat(ua[0])+"%", 
+										{ radius: 15, color:  get_humidity_color(parseFloat(ua[0]))}), clickable: true })
+							.addTo(map).bindPopup(info_output(jsonData));
+							if(opened){
+								HWB.openPopup();
+							}
+						}
+						if(wind_opt){
+							if(jsonData.message.Dm!= "" && jsonData.message.Sm!= ""){
+								var dm = jsonData.message.Dm.split("D");
 								if(HWB_Arrow!=null && HWB_arrowHead!=null){
 									window.map.removeLayer(HWB_Arrow);
 									window.map.removeLayer(HWB_arrowHead);
 								}
-							   	HWB_Arrow = L.polyline([HWB_POS, get_wind_cord(HWB_POS, ARROW_R, dm[0])], {}).addTo(map);
+							   	HWB_Arrow = L.polyline([HWB_POS, get_wind_cord(HWB_POS, ARROW_R, parseFloat(dm[0]))], {}).addTo(map);
 							    HWB_arrowHead = L.polylineDecorator(HWB_Arrow).addTo(map);
-							}
-							if(jsonData.message.Sm!= ""){
 								var sm = jsonData.message.Sm.split("M");
 								if(anim_HWB!=null){
 									clearInterval(anim_HWB);
@@ -1151,7 +1420,7 @@
 	        	                        if(++HWB_arrowOffset > 100)
 	        	                        	HWB_arrowOffset = 0;
 							    	}
-							    }, get_wind_speed(sm[0]));
+							    }, get_wind_speed(parseFloat(sm[0])));
 							}
 						}
 					}
