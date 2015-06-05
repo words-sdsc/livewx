@@ -223,8 +223,8 @@
 
 	
 	// markers sizes
-	var CIRCLE_R = 10000;
-	var ARROW_R = 0.1;
+	var CIRCLE_R = 12000;
+	var ARROW_R = 0.12;
 	var CIRCLE_T = 0.5;
 	var center = [32.880865,-117.234080];
 	var arrow_size = 10;
@@ -1270,7 +1270,7 @@
 							}
 						}
 					}else if(jsonData.message.Name == "SO"){
-						show_data(SO, jsonData)
+						show_data(SO, jsonData);
 						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
 							if(SO_circle!=null){
@@ -1280,7 +1280,7 @@
 							    color: select_th_color(ta[0]),
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
-							}).addTo(map);;
+							}).addTo(map);
 						}
 						if(humidity_opt && jsonData.message.Ua!=""){
 							var ua = jsonData.message.Ua.split("P");
@@ -1305,14 +1305,14 @@
 								}
 							   	SO_Arrow = L.polyline([SO_POS, get_wind_cord(SO_POS, ARROW_R, parseFloat(dm[0]))], {}).addTo(map);
 							    SO_arrowHead = L.polylineDecorator(SO_Arrow).addTo(map);
-								var sm = jsonData.message.Sm.split("M");
+							    var sm = jsonData.message.Sm.split("M");
 								if(anim_SO!=null){
 									clearInterval(anim_SO);
 								}
 							    anim_SO = window.setInterval(function() {
 							    	if(SO_Arrow!=null){
 							        	SO_arrowHead.setPatterns([
-							        		{offset: SO_arrowOffset+'%', repeat: 0, Symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        		{offset: SO_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
 							        	     ])
 	        	                        if(++SO_arrowOffset > 100)
 	        	                        	SO_arrowOffset = 0;
@@ -1321,7 +1321,7 @@
 							}
 						}
 					}else if(jsonData.message.Name == "SMERNS"){
-						show_data(SMERNS, jsonData)
+						show_data(SMERNS, jsonData);
 						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
 							if(SMERNS_circle!=null){
@@ -1331,7 +1331,7 @@
 							    color: select_th_color(ta[0]),
 							    fillColor: select_th_color(ta[0]),
 							    fillOpacity: CIRCLE_T
-							}).addTo(map);;
+							}).addTo(map);
 						}
 						if(humidity_opt && jsonData.message.Ua!=""){
 							var ua = jsonData.message.Ua.split("P");
@@ -1363,7 +1363,7 @@
 							    anim_SMERNS = window.setInterval(function() {
 							    	if(SMERNS_Arrow!=null){
 							        	SMERNS_arrowHead.setPatterns([
-							        		{offset: SMERNS_arrowOffset+'%', repeat: 0, Symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
+							        		{offset: SMERNS_arrowOffset+'%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: arrow_size, polygon: false, pathOptions: {stroke: true}})}
 							        	     ])
 	        	                        if(++SMERNS_arrowOffset > 100)
 	        	                        	SMERNS_arrowOffset = 0;
@@ -1371,7 +1371,7 @@
 							    }, get_wind_speed(parseFloat(sm[0])));
 							}
 						}
-					}else if(jsonData.message.Name == "HWB"){
+					}else if(jsonData.message.Name == "SMERNS"){
 						show_data(HWB, jsonData);
 						if(jsonData.message.Ta!="" && temperature_opt){
 							var ta = jsonData.message.Ta.split(".");
