@@ -2,15 +2,11 @@ package com.websocket;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.StringWriter;
-import java.net.UnknownHostException;
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -207,8 +203,12 @@ public class WebSocketEndPoint {
 	public void SendResult(Session session){
 		
 	}
+	
 	@OnMessage
 	public void handleMessage(String message, Session userSession) throws IOException, InterruptedException{
+		
+		System.out.println("handlMessage: " + message + " userSession: " + userSession);
+		
 		if(message.equals("stop")){
 			handleClose(userSession);
 			System.out.println("Client is now disconnected!");
@@ -481,7 +481,9 @@ public class WebSocketEndPoint {
 							
 						}
 					}
-					userSession.getBasicRemote().sendText(stationToJson(station));
+					synchronized(userSession) {
+						userSession.getBasicRemote().sendText(stationToJson(station));
+					}
 				}
 				
 				/*
@@ -544,13 +546,7 @@ public class WebSocketEndPoint {
 			try(JsonWriter writer = Json.createWriter(sw)){
 				writer.write(result);
 			} 
-			
-			
 			return sw.toString();
 		}
-
 	}
 }
-/*
-  						
- * */

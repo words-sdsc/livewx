@@ -1,14 +1,14 @@
 package com.websocket;
 
 
-import java.util.Random;
-import java.security.InvalidParameterException;
-import sun.net.*;
-import java.net.*;
-import java.lang.Integer;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
+import java.net.UnknownHostException;
+import java.security.InvalidParameterException;
+import java.util.Random;
 
 
 public class MulticastListenerThread extends Thread
