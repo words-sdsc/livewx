@@ -695,7 +695,7 @@
             if (jsonData.message != null) {
                 if (jsonData.message.Name == "SDSC") {
                     show_data(SDSC, jsonData);
-                    if (jsonData.message.Ta != "" && temperature_opt) {
+                    if (jsonData.message.hasOwnProperty('Ta') && temperature_opt) {
                         var ta = jsonData.message.Ta.split(".");
                         if (SDSC_circle != null) {
                             window.map.removeLayer(SDSC_circle);
@@ -706,7 +706,7 @@
                             fillOpacity : CIRCLE_T
                         }).addTo(map);
                     }
-                    if (humidity_opt && jsonData.message.Ua != "") {
+                    if (humidity_opt && jsonData.message.hasOwnProperty('Ua')) {
                         var ua = jsonData.message.Ua.split("P");
                         var opened = false;
                         if (SDSC.getPopup() != null) {
@@ -726,8 +726,8 @@
                         }
                     }
                     if (wind_opt) {
-                        if (jsonData.message.Dm != ""
-                                && jsonData.message.Sm != "") {
+                        if (jsonData.message.hasOwnProperty('Dm')
+                                && jsonData.message.hasOwnProperty('Sm')) {
                             var dm = jsonData.message.Dm.split("D");
                             if (SDSC_Arrow != null && SDSC_arrowHead != null) {
                                 window.map.removeLayer(SDSC_Arrow);
@@ -767,7 +767,7 @@
 
                 } else if (jsonData.message.Name == "WS") {
                     show_data(WS, jsonData);
-                    if (jsonData.message.Ta != "" && temperature_opt) {
+                    if (jsonData.message.hasOwnProperty('Ta') && temperature_opt) {
                         var ta = jsonData.message.Ta.split(".");
                         if (WS_circle != null) {
                             window.map.removeLayer(WS_circle);
@@ -778,7 +778,7 @@
                             fillOpacity : CIRCLE_T
                         }).addTo(map);
                     }
-                    if (humidity_opt && jsonData.message.Ua != "") {
+                    if (humidity_opt && jsonData.message.hasOwnProperty('Ua')) {
                         var ua = jsonData.message.Ua.split("P");
                         var opened = false;
                         if (WS.getPopup() != null) {
@@ -798,8 +798,8 @@
                         }
                     }
                     if (wind_opt) {
-                        if (jsonData.message.Dm != ""
-                                && jsonData.message.Sm != "") {
+                        if (jsonData.message.hasOwnProperty('Dm')
+                                && jsonData.message.hasOwnProperty('Sm')) {
                             var dm = jsonData.message.Dm.split("D");
                             if (WS_Arrow != null && WS_arrowHead != null) {
                                 window.map.removeLayer(WS_Arrow);
@@ -838,7 +838,7 @@
                     }
                 } else if (jsonData.message.Name == "TP") {
                     show_data(TP, jsonData);
-                    if (jsonData.message.Ta != "" && temperature_opt) {
+                    if (jsonData.message.hasOwnProperty('Ta') && temperature_opt) {
                         var ta = jsonData.message.Ta.split(".");
                         if (TP_circle != null) {
                             window.map.removeLayer(TP_circle);
@@ -849,7 +849,7 @@
                             fillOpacity : CIRCLE_T
                         }).addTo(map);
                     }
-                    if (humidity_opt && jsonData.message.Ua != "") {
+                    if (humidity_opt && jsonData.message.hasOwnProperty('Ua')) {
                         var ua = jsonData.message.Ua.split("P");
                         var opened = false;
                         if (TP.getPopup() != null) {
@@ -869,8 +869,8 @@
                         }
                     }
                     if (wind_opt) {
-                        if (jsonData.message.Dm != ""
-                                && jsonData.message.Sm != "") {
+                        if (jsonData.message.hasOwnProperty('Dm')
+                                && jsonData.message.hasOwnProperty('Sm')) {
                             var dm = jsonData.message.Dm.split("D");
                             if (TP_Arrow != null && TP_arrowHead != null) {
                                 window.map.removeLayer(TP_Arrow);
@@ -909,7 +909,7 @@
                     }
                 } else if (jsonData.message.Name == "BMR") {
                     show_data(BMR, jsonData);
-                    if (jsonData.message.Ta != "" && temperature_opt) {
+                    if (jsonData.message.hasOwnProperty('Ta') && temperature_opt) {
                         var ta = jsonData.message.Ta.split(".");
                         if (BMR_circle != null) {
                             window.map.removeLayer(BMR_circle);
@@ -920,7 +920,7 @@
                             fillOpacity : CIRCLE_T
                         }).addTo(map);
                     }
-                    if (humidity_opt && jsonData.message.Ua != "") {
+                    if (humidity_opt && jsonData.message.hasOwnProperty('Ua')) {
                         var ua = jsonData.message.Ua.split("P");
                         var opened = false;
                         if (BMR.getPopup() != null) {
@@ -940,8 +940,8 @@
                         }
                     }
                     if (wind_opt) {
-                        if (jsonData.message.Dm != ""
-                                && jsonData.message.Sm != "") {
+                        if (jsonData.message.hasOwnProperty('Dm')
+                                && jsonData.message.hasOwnProperty('Sm')) {
                             var dm = jsonData.message.Dm.split("D");
                             if (BMR_Arrow != null && BMR_arrowHead != null) {
                                 window.map.removeLayer(BMR_Arrow);
@@ -980,7 +980,7 @@
                     }
                 } else if (jsonData.message.Name == "BH") {
                     show_data(BH, jsonData);
-                    if (jsonData.message.Ta != "" && temperature_opt) {
+                    if (jsonData.message.hasOwnProperty('Ta') && temperature_opt) {
                         var ta = jsonData.message.Ta.split(".");
                         if (BH_circle != null) {
                             window.map.removeLayer(BH_circle);
@@ -991,7 +991,7 @@
                             fillOpacity : CIRCLE_T
                         }).addTo(map);
                     }
-                    if (humidity_opt && jsonData.message.Ua != "") {
+                    if (humidity_opt && jsonData.message.hasOwnProperty('Ua')) {
                         var ua = jsonData.message.Ua.split("P");
                         var opened = false;
                         if (BH.getPopup() != null) {
@@ -1011,8 +1011,8 @@
                         }
                     }
                     if (wind_opt) {
-                        if (jsonData.message.Dm != ""
-                                && jsonData.message.Sm != "") {
+                        if (jsonData.message.hasOwnProperty('Dm')
+                                && jsonData.message.hasOwnProperty('Sm')) {
                             var dm = jsonData.message.Dm.split("D");
                             if (BH_Arrow != null && BH_arrowHead != null) {
                                 window.map.removeLayer(BH_Arrow);
@@ -1051,7 +1051,7 @@
                     }
                 } else if (jsonData.message.Name == "LP") {
                     show_data(LP, jsonData);
-                    if (jsonData.message.Ta != "" && temperature_opt) {
+                    if (jsonData.message.hasOwnProperty('Ta') && temperature_opt) {
                         var ta = jsonData.message.Ta.split(".");
                         if (LP_circle != null) {
                             window.map.removeLayer(LP_circle);
@@ -1062,7 +1062,7 @@
                             fillOpacity : CIRCLE_T
                         }).addTo(map);
                     }
-                    if (humidity_opt && jsonData.message.Ua != "") {
+                    if (humidity_opt && jsonData.message.hasOwnProperty('Ua')) {
                         var ua = jsonData.message.Ua.split("P");
                         var opened = false;
                         if (LP.getPopup() != null) {
@@ -1082,8 +1082,8 @@
                         }
                     }
                     if (wind_opt) {
-                        if (jsonData.message.Dm != ""
-                                && jsonData.message.Sm != "") {
+                        if (jsonData.message.hasOwnProperty('Dm')
+                                && jsonData.message.hasOwnProperty('Sm')) {
                             var dm = jsonData.message.Dm.split("D");
                             if (LP_Arrow != null && LP_arrowHead != null) {
                                 window.map.removeLayer(LP_Arrow);
@@ -1122,7 +1122,7 @@
                     }
                 } else if (jsonData.message.Name == "MG") {
                     show_data(MG, jsonData);
-                    if (jsonData.message.Ta != "" && temperature_opt) {
+                    if (jsonData.message.hasOwnProperty('Ta') && temperature_opt) {
                         var ta = jsonData.message.Ta.split(".");
                         if (MG_circle != null) {
                             window.map.removeLayer(MG_circle);
@@ -1133,7 +1133,7 @@
                             fillOpacity : CIRCLE_T
                         }).addTo(map);
                     }
-                    if (humidity_opt && jsonData.message.Ua != "") {
+                    if (humidity_opt && jsonData.message.hasOwnProperty('Ua')) {
                         var ua = jsonData.message.Ua.split("P");
                         var opened = false;
                         if (MG.getPopup() != null) {
@@ -1153,8 +1153,8 @@
                         }
                     }
                     if (wind_opt) {
-                        if (jsonData.message.Dm != ""
-                                && jsonData.message.Sm != "") {
+                        if (jsonData.message.hasOwnProperty('Dm')
+                                && jsonData.message.hasOwnProperty('Sm')) {
                             var dm = jsonData.message.Dm.split("D");
                             if (MG_Arrow != null && MG_arrowHead != null) {
                                 window.map.removeLayer(MG_Arrow);
@@ -1193,7 +1193,7 @@
                     }
                 } else if (jsonData.message.Name == "ML") {
                     show_data(ML, jsonData)
-                    if (jsonData.message.Ta != "" && temperature_opt) {
+                    if (jsonData.message.hasOwnProperty('Ta') && temperature_opt) {
                         var ta = jsonData.message.Ta.split(".");
                         if (ML_circle != null) {
                             window.map.removeLayer(ML_circle);
@@ -1205,7 +1205,7 @@
                         }).addTo(map);
                         ;
                     }
-                    if (humidity_opt && jsonData.message.Ua != "") {
+                    if (humidity_opt && jsonData.message.hasOwnProperty('Ua')) {
                         var ua = jsonData.message.Ua.split("P");
                         var opened = false;
                         if (ML.getPopup() != null) {
@@ -1225,8 +1225,8 @@
                         }
                     }
                     if (wind_opt) {
-                        if (jsonData.message.Dm != ""
-                                && jsonData.message.Sm != "") {
+                        if (jsonData.message.hasOwnProperty('Dm')
+                                && jsonData.message.hasOwnProperty('Sm')) {
                             var dm = jsonData.message.Dm.split("D");
                             if (ML_Arrow != null && ML_arrowHead != null) {
                                 window.map.removeLayer(ML_Arrow);
@@ -1265,7 +1265,7 @@
                     }
                 } else if (jsonData.message.Name == "MW") {
                     show_data(MW, jsonData);
-                    if (jsonData.message.Ta != "" && temperature_opt) {
+                    if (jsonData.message.hasOwnProperty('Ta') && temperature_opt) {
                         var ta = jsonData.message.Ta.split(".");
                         if (MW_circle != null) {
                             window.map.removeLayer(MW_circle);
@@ -1276,7 +1276,7 @@
                             fillOpacity : CIRCLE_T
                         }).addTo(map);
                     }
-                    if (humidity_opt && jsonData.message.Ua != "") {
+                    if (humidity_opt && jsonData.message.hasOwnProperty('Ua')) {
                         var ua = jsonData.message.Ua.split("P");
                         var opened = false;
                         if (MW.getPopup() != null) {
@@ -1296,8 +1296,8 @@
                         }
                     }
                     if (wind_opt) {
-                        if (jsonData.message.Dm != ""
-                                && jsonData.message.Sm != "") {
+                        if (jsonData.message.hasOwnProperty('Dm')
+                                && jsonData.message.hasOwnProperty('Sm')) {
                             var dm = jsonData.message.Dm.split("D");
                             if (MW_Arrow != null && MW_arrowHead != null) {
                                 window.map.removeLayer(MW_Arrow);
@@ -1336,7 +1336,7 @@
                     }
                 } else if (jsonData.message.Name == "CNMZ3") {
                     show_data(CNMZ3, jsonData);
-                    if (jsonData.message.Ta != "" && temperature_opt) {
+                    if (jsonData.message.hasOwnProperty('Ta') && temperature_opt) {
                         var ta = jsonData.message.Ta.split(".");
                         if (CNMZ3_circle != null) {
                             window.map.removeLayer(CNMZ3_circle);
@@ -1348,7 +1348,7 @@
                         }).addTo(map);
                         show_data(CNMZ3, jsonData);
                     }
-                    if (humidity_opt && jsonData.message.Ua != "") {
+                    if (humidity_opt && jsonData.message.hasOwnProperty('Ua')) {
                         var ua = jsonData.message.Ua.split("P");
 
                         var opened = false;
@@ -1370,8 +1370,8 @@
                     }
 
                     if (wind_opt) {
-                        if (jsonData.message.Dm != ""
-                                && jsonData.message.Sm != "") {
+                        if (jsonData.message.hasOwnProperty('Dm')
+                                && jsonData.message.hasOwnProperty('Sm')) {
                             var dm = jsonData.message.Dm.split("D");
                             if (CNMZ3_Arrow != null && CNMZ3_arrowHead != null) {
                                 window.map.removeLayer(CNMZ3_Arrow);
@@ -1410,7 +1410,7 @@
                     }
                 } else if (jsonData.message.Name == "PA") {
                     show_data(PA, jsonData);
-                    if (jsonData.message.Ta != "" && temperature_opt) {
+                    if (jsonData.message.hasOwnProperty('Ta') && temperature_opt) {
                         var ta = jsonData.message.Ta.split(".");
                         if (PA_circle != null) {
                             window.map.removeLayer(PA_circle);
@@ -1421,7 +1421,7 @@
                             fillOpacity : CIRCLE_T
                         }).addTo(map);
                     }
-                    if (humidity_opt && jsonData.message.Ua != "") {
+                    if (humidity_opt && jsonData.message.hasOwnProperty('Ua')) {
                         var ua = jsonData.message.Ua.split("P");
                         var opened = false;
                         if (PA.getPopup() != null) {
@@ -1441,8 +1441,8 @@
                         }
                     }
                     if (wind_opt) {
-                        if (jsonData.message.Dm != ""
-                                && jsonData.message.Sm != "") {
+                        if (jsonData.message.hasOwnProperty('Dm')
+                                && jsonData.message.hasOwnProperty('Sm')) {
                             var dm = jsonData.message.Dm.split("D");
                             if (PA_Arrow != null && PA_arrowHead != null) {
                                 window.map.removeLayer(PA_Arrow);
@@ -1481,7 +1481,7 @@
                     }
                 } else if (jsonData.message.Name == "PLC") {
                     show_data(PLC, jsonData);
-                    if (jsonData.message.Ta != "" && temperature_opt) {
+                    if (jsonData.message.hasOwnProperty('Ta') && temperature_opt) {
                         var ta = jsonData.message.Ta.split(".");
                         if (PLC_circle != null) {
                             window.map.removeLayer(PLC_circle);
@@ -1492,7 +1492,7 @@
                             fillOpacity : CIRCLE_T
                         }).addTo(map);
                     }
-                    if (humidity_opt && jsonData.message.Ua != "") {
+                    if (humidity_opt && jsonData.message.hasOwnProperty('Ua')) {
                         var ua = jsonData.message.Ua.split("P");
                         var opened = false;
                         if (PLC.getPopup() != null) {
@@ -1512,8 +1512,8 @@
                         }
                     }
                     if (wind_opt) {
-                        if (jsonData.message.Dm != ""
-                                && jsonData.message.Sm != "") {
+                        if (jsonData.message.hasOwnProperty('Dm')
+                                && jsonData.message.hasOwnProperty('Sm')) {
                             var dm = jsonData.message.Dm.split("D");
                             if (PLC_Arrow != null && PLC_arrowHead != null) {
                                 window.map.removeLayer(PLC_Arrow);
@@ -1552,7 +1552,7 @@
                     }
                 } else if (jsonData.message.Name == "RM") {
                     show_data(RM, jsonData);
-                    if (jsonData.message.Ta != "" && temperature_opt) {
+                    if (jsonData.message.hasOwnProperty('Ta') && temperature_opt) {
                         var ta = jsonData.message.Ta.split(".");
                         if (RM_circle != null) {
                             window.map.removeLayer(RM_circle);
@@ -1563,7 +1563,7 @@
                             fillOpacity : CIRCLE_T
                         }).addTo(map);
                     }
-                    if (humidity_opt && jsonData.message.Ua != "") {
+                    if (humidity_opt && jsonData.message.hasOwnProperty('Ua')) {
                         var ua = jsonData.message.Ua.split("P");
                         var opened = false;
                         if (RM.getPopup() != null) {
@@ -1583,8 +1583,8 @@
                         }
                     }
                     if (wind_opt) {
-                        if (jsonData.message.Dm != ""
-                                && jsonData.message.Sm != "") {
+                        if (jsonData.message.hasOwnProperty('Dm')
+                                && jsonData.message.hasOwnProperty('Sm')) {
                             var dm = jsonData.message.Dm.split("D");
                             if (RM_Arrow != null && RM_arrowHead != null) {
                                 window.map.removeLayer(RM_Arrow);
@@ -1623,7 +1623,7 @@
                     }
                 } else if (jsonData.message.Name == "SCI") {
                     show_data(SCI, jsonData);
-                    if (jsonData.message.Ta != "" && temperature_opt) {
+                    if (jsonData.message.hasOwnProperty('Ta') && temperature_opt) {
                         var ta = jsonData.message.Ta.split(".");
                         if (SCI_circle != null) {
                             window.map.removeLayer(SCI_circle);
@@ -1634,7 +1634,7 @@
                             fillOpacity : CIRCLE_T
                         }).addTo(map);
                     }
-                    if (humidity_opt && jsonData.message.Ua != "") {
+                    if (humidity_opt && jsonData.message.hasOwnProperty('Ua')) {
                         var ua = jsonData.message.Ua.split("P");
                         var opened = false;
                         if (SCI.getPopup() != null) {
@@ -1654,8 +1654,8 @@
                         }
                     }
                     if (wind_opt) {
-                        if (jsonData.message.Dm != ""
-                                && jsonData.message.Sm != "") {
+                        if (jsonData.message.hasOwnProperty('Dm')
+                                && jsonData.message.hasOwnProperty('Sm')) {
                             var dm = jsonData.message.Dm.split("D");
                             if (SCI_Arrow != null && SCI_arrowHead != null) {
                                 window.map.removeLayer(SCI_Arrow);
@@ -1694,7 +1694,7 @@
                     }
                 } else if (jsonData.message.Name == "SY") {
                     show_data(SY, jsonData)
-                    if (jsonData.message.Ta != "" && temperature_opt) {
+                    if (jsonData.message.hasOwnProperty('Ta') && temperature_opt) {
                         var ta = jsonData.message.Ta.split(".");
                         if (SY_circle != null) {
                             window.map.removeLayer(SY_circle);
@@ -1706,7 +1706,7 @@
                         }).addTo(map);
                         ;
                     }
-                    if (humidity_opt && jsonData.message.Ua != "") {
+                    if (humidity_opt && jsonData.message.hasOwnProperty('Ua')) {
                         var ua = jsonData.message.Ua.split("P");
                         var opened = false;
                         if (SY.getPopup() != null) {
@@ -1726,8 +1726,8 @@
                         }
                     }
                     if (wind_opt) {
-                        if (jsonData.message.Dm != ""
-                                && jsonData.message.Sm != "") {
+                        if (jsonData.message.hasOwnProperty('Dm')
+                                && jsonData.message.hasOwnProperty('Sm')) {
                             var dm = jsonData.message.Dm.split("D");
                             if (SY_Arrow != null && SY_arrowHead != null) {
                                 window.map.removeLayer(SY_Arrow);
@@ -1767,7 +1767,7 @@
                     }
                 } else if (jsonData.message.Name == "SO") {
                     show_data(SO, jsonData);
-                    if (jsonData.message.Ta != "" && temperature_opt) {
+                    if (jsonData.message.hasOwnProperty('Ta') && temperature_opt) {
                         var ta = jsonData.message.Ta.split(".");
                         if (SO_circle != null) {
                             window.map.removeLayer(SO_circle);
@@ -1779,7 +1779,7 @@
                         }).addTo(map);
                         ;
                     }
-                    if (humidity_opt && jsonData.message.Ua != "") {
+                    if (humidity_opt && jsonData.message.hasOwnProperty('Ua')) {
                         var ua = jsonData.message.Ua.split("P");
                         var opened = false;
                         if (SO.getPopup() != null) {
@@ -1799,8 +1799,8 @@
                         }
                     }
                     if (wind_opt) {
-                        if (jsonData.message.Dm != ""
-                                && jsonData.message.Sm != "") {
+                        if (jsonData.message.hasOwnProperty('Dm')
+                                && jsonData.message.hasOwnProperty('Sm')) {
                             var dm = jsonData.message.Dm.split("D");
                             if (SO_Arrow != null && SO_arrowHead != null) {
                                 window.map.removeLayer(SO_Arrow);
@@ -1839,7 +1839,7 @@
                     }
                 } else if (jsonData.message.Name == "SMERNS") {
                     show_data(SMERNS, jsonData);
-                    if (jsonData.message.Ta != "" && temperature_opt) {
+                    if (jsonData.message.hasOwnProperty('Ta') && temperature_opt) {
                         var ta = jsonData.message.Ta.split(".");
                         if (SMERNS_circle != null) {
                             window.map.removeLayer(SMERNS_circle);
@@ -1851,7 +1851,7 @@
                         }).addTo(map);
                         ;
                     }
-                    if (humidity_opt && jsonData.message.Ua != "") {
+                    if (humidity_opt && jsonData.message.hasOwnProperty('Ua')) {
                         var ua = jsonData.message.Ua.split("P");
                         var opened = false;
                         if (SMERNS.getPopup() != null) {
@@ -1871,8 +1871,8 @@
                         }
                     }
                     if (wind_opt) {
-                        if (jsonData.message.Dm != ""
-                                && jsonData.message.Sm != "") {
+                        if (jsonData.message.hasOwnProperty('Dm')
+                                && jsonData.message.hasOwnProperty('Sm')) {
                             var dm = jsonData.message.Dm.split("D");
                             if (SMERNS_Arrow != null
                                     && SMERNS_arrowHead != null) {
@@ -1912,7 +1912,7 @@
                     }
                 } else if (jsonData.message.Name == "HWB") {
                     show_data(HWB, jsonData);
-                    if (jsonData.message.Ta != "" && temperature_opt) {
+                    if (jsonData.message.hasOwnProperty('Ta') && temperature_opt) {
                         var ta = jsonData.message.Ta.split(".");
                         if (HWB_circle != null) {
                             window.map.removeLayer(HWB_circle);
@@ -1923,7 +1923,7 @@
                             fillOpacity : CIRCLE_T
                         }).addTo(map);
                     }
-                    if (humidity_opt && jsonData.message.Ua != "") {
+                    if (humidity_opt && jsonData.message.hasOwnProperty('Ua')) {
                         var ua = jsonData.message.Ua.split("P");
                         var opened = false;
                         if (HWB.getPopup() != null) {
@@ -1943,8 +1943,8 @@
                         }
                     }
                     if (wind_opt) {
-                        if (jsonData.message.Dm != ""
-                                && jsonData.message.Sm != "") {
+                        if (jsonData.message.hasOwnProperty('Dm')
+                                && jsonData.message.hasOwnProperty('Sm')) {
                             var dm = jsonData.message.Dm.split("D");
                             if (HWB_Arrow != null && HWB_arrowHead != null) {
                                 window.map.removeLayer(HWB_Arrow);
