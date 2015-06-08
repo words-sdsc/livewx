@@ -61,10 +61,6 @@
                     window.map.removeLayer(LP_Arrow);
                     window.map.removeLayer(LP_arrowHead);
                 }
-                if (MG_Arrow != null && MG_arrowHead != null) {
-                    window.map.removeLayer(MG_Arrow);
-                    window.map.removeLayer(MG_arrowHead);
-                }
                 if (ML_Arrow != null && ML_arrowHead != null) {
                     window.map.removeLayer(ML_Arrow);
                     window.map.removeLayer(ML_arrowHead);
@@ -129,8 +125,6 @@
                     window.map.removeLayer(BH_circle);
                 if (LP_circle != null)
                     window.map.removeLayer(LP_circle);
-                if (MG_circle != null)
-                    window.map.removeLayer(MG_circle);
                 if (ML_circle != null)
                     window.map.removeLayer(ML_circle);
                 if (MW_circle != null)
@@ -200,13 +194,6 @@
                 window.map.removeLayer(LP);
                 LP = new L.marker(LP_POS, {
                     icon : L.letterIcon('LP', {
-                        radius : 15
-                    }),
-                    clickable : true
-                }).addTo(map);
-                window.map.removeLayer(MG);
-                MG = new L.marker(MG_POS, {
-                    icon : L.letterIcon('MG', {
                         radius : 15
                     }),
                     clickable : true
@@ -307,7 +294,6 @@
         var BMR_POS = new L.LatLng(33.16, -116.81);
         var BH_POS = new L.LatLng(33.33, -116.92);
         var LP_POS = new L.LatLng(32.70, -116.76);
-        var MG_POS = new L.LatLng(33.19, -116.76);
         var ML_POS = new L.LatLng(32.89, -116.42);
         var MW_POS = new L.LatLng(33.01, -116.97);
         var CNMZ3_POS = new L.LatLng(32.67, -117.24);
@@ -414,18 +400,6 @@
         var LP_arrowHead = null;
         var LP_arrowOffset = 0;
         var anim_LP = null;
-
-        MG = new L.marker(MG_POS, {
-            icon : L.letterIcon('MG', {
-                radius : 15
-            }),
-            clickable : true
-        }).addTo(map).bindPopup("Loading Data...");
-        var MG_circle = null;
-        var MG_Arrow = null;
-        var MG_arrowHead = null;
-        var MG_arrowOffset = 0;
-        var anim_MG = null;
 
         ML = new L.marker(ML_POS, {
             icon : L.letterIcon('ML', {
@@ -1116,77 +1090,6 @@
                                     } ])
                                     if (++LP_arrowOffset > 100)
                                         LP_arrowOffset = 0;
-                                }
-                            }, get_wind_speed(parseFloat(sm[0])));
-                        }
-                    }
-                } else if (jsonData.message.Name == "MG") {
-                    show_data(MG, jsonData);
-                    if (jsonData.message.hasOwnProperty('Ta') && temperature_opt) {
-                        var ta = jsonData.message.Ta.split(".");
-                        if (MG_circle != null) {
-                            window.map.removeLayer(MG_circle);
-                        }
-                        MG_circle = L.circle(MG_POS, CIRCLE_R, {
-                            color : select_th_color(ta[0]),
-                            fillColor : select_th_color(ta[0]),
-                            fillOpacity : CIRCLE_T
-                        }).addTo(map);
-                    }
-                    if (humidity_opt && jsonData.message.hasOwnProperty('Ua')) {
-                        var ua = jsonData.message.Ua.split("P");
-                        var opened = false;
-                        if (MG.getPopup() != null) {
-                            opened = MG.getPopup()._isOpen;
-                        }
-                        window.map.removeLayer(MG);
-                        MG = new L.marker(MG_POS, {
-                            icon : L.letterIcon('MG <br>' + parseFloat(ua[0])
-                                    + "%", {
-                                radius : 15,
-                                color : get_humidity_color(parseFloat(ua[0]))
-                            }),
-                            clickable : true
-                        }).addTo(map).bindPopup(info_output(jsonData));
-                        if (opened) {
-                            MG.openPopup();
-                        }
-                    }
-                    if (wind_opt) {
-                        if (jsonData.message.hasOwnProperty('Dm')
-                                && jsonData.message.hasOwnProperty('Sm')) {
-                            var dm = jsonData.message.Dm.split("D");
-                            if (MG_Arrow != null && MG_arrowHead != null) {
-                                window.map.removeLayer(MG_Arrow);
-                                window.map.removeLayer(MG_arrowHead);
-                            }
-                            MG_Arrow = L.polyline(
-                                    [
-                                            MG_POS,
-                                            get_wind_cord(MG_POS, ARROW_R,
-                                                    parseFloat(dm[0])) ], {})
-                                    .addTo(map);
-                            MG_arrowHead = L.polylineDecorator(MG_Arrow).addTo(
-                                    map);
-                            var sm = jsonData.message.Sm.split("M");
-                            if (anim_MG != null) {
-                                clearInterval(anim_MG);
-                            }
-                            anim_MG = window.setInterval(function() {
-                                if (MG_Arrow != null) {
-                                    MG_arrowHead.setPatterns([ {
-                                        offset : MG_arrowOffset + '%',
-                                        repeat : 0,
-                                        symbol : L.Symbol.arrowHead({
-                                            pixelSize : arrow_size,
-                                            polygon : false,
-                                            pathOptions : {
-                                                stroke : true
-                                            }
-                                        })
-                                    } ])
-                                    if (++MG_arrowOffset > 100)
-                                        MG_arrowOffset = 0;
                                 }
                             }, get_wind_speed(parseFloat(sm[0])));
                         }
