@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -25,62 +26,61 @@ import javax.websocket.server.ServerEndpoint;
 @ServerEndpoint(value = "/websocket")
 public class WebSocketEndPoint {
 
-    private static Set<Session> users = Collections
-            .synchronizedSet(new HashSet<Session>());
-
-    boolean connect = true;
+    private static Map<Session,ClientThread> _clients = Collections
+            .synchronizedMap(new HashMap<Session,ClientThread>());
     
     private static BlockingQueue<byte[]> _queue = new LinkedBlockingQueue<byte[]>();
     
     private static Map<String,MulticastListenerThread> _listeners =
             Collections.synchronizedMap(new HashMap<String,MulticastListenerThread>());
 
-    private Set<Source> _sources = new HashSet<Source>();
+    private static Set<Source> _sources = new HashSet<Source>();
     
     @OnOpen
     public void handleOpen(Session userSession) throws InterruptedException,
             IOException {
-
-        System.out.println("Server get connected");
-        
-        if(users.isEmpty()) {
-            _startMulticastListening();
-        }
-        users.add(userSession);
+        //System.out.println("Server get connected");
     }
 
     @OnClose
     public void handleClose(Session userSession) {
         
-        System.out.println("Client is now disconnected!");
+        //System.out.println("Client is now disconnected!");
         
-        users.remove(userSession);
-        if(users.isEmpty()) {
-            _stopMulticastListening();
-        }        
-    }
-
-    public void SendResult(Session session) {
-
+        ClientThread thread = _clients.remove(userSession);
+        thread.stopSending();
+        try {
+            thread.join(5000);
+        } catch (InterruptedException e) {
+            System.err.println("Error waiting for client thread to stop: " + e.getMessage());
+        }
+        
+        synchronized(_clients) {
+            if(_clients.isEmpty()) {
+                _stopMulticastListening();
+            }
+        }
     }
     
     @OnMessage
     public void handleMessage(String message, Session userSession)
             throws IOException, InterruptedException {
 
-        System.out.println("handleMessage: " + message + " userSession: "
-                + userSession);
-
         if (message.equals("stop")) {
             handleClose(userSession);
-            System.out.println("Client is now disconnected!");
-            
-        } else {
+        } else if(message.equals("start")) {
 
-            ClientThread thread = new ClientThread(userSession);
-            thread.start();
-            // TODO need to join when done
-            
+            synchronized(_clients) {
+
+                if(_clients.isEmpty()) {
+                    _startMulticastListening();
+                }
+    
+                ClientThread thread = new ClientThread(userSession);
+                thread.start();
+                
+                _clients.put(userSession, thread);
+            }
         }
 
     }
@@ -90,12 +90,12 @@ public class WebSocketEndPoint {
         t.printStackTrace();
     }
 
-  private void _loadSources() {
+  private static void _loadSources() {
          
       _sources.add(new Source("BH",
-              "172.16.42.86",
-              "233.7.117.114",
-              4042));
+          "172.16.42.86",
+          "233.7.117.114",
+          4042));
 
         _sources.add(new Source("BMR",
             "172.16.42.86",
@@ -186,8 +186,10 @@ public class WebSocketEndPoint {
 
     }
 
-    private void _startMulticastListening() {
+    private static void _startMulticastListening() {
 
+        System.out.println("start multicast listening");
+        
         _sources.clear();
         _loadSources();
         
@@ -207,8 +209,10 @@ public class WebSocketEndPoint {
         }
     }
     
-    private void _stopMulticastListening() {
+    private static void _stopMulticastListening() {
         
+        System.out.println("stop multicast listening");
+
         for(MulticastListenerThread thread : _listeners.values()) {
             thread.stopListening();
             try {
@@ -225,6 +229,7 @@ public class WebSocketEndPoint {
 
         private Session userSession;
         private Map<String,String> _data = new HashMap<String,String>();
+        private AtomicBoolean _keepSending = new AtomicBoolean(true);
 
         ClientThread(Session UserSession) {
             userSession = UserSession;
@@ -233,7 +238,7 @@ public class WebSocketEndPoint {
         @Override
         public void run() {
             try {
-                while (true) {
+                while (_keepSending.get()) {
 
                     final byte[] bytes = _queue.take();
                     final String str = new String(bytes);
@@ -263,9 +268,12 @@ public class WebSocketEndPoint {
                             }
                         }
                     }
-                    synchronized (userSession) {
-                        userSession.getBasicRemote().sendText(
-                                dataToJson());
+                    
+                    synchronized(userSession) {
+                        if(_keepSending.get()) {
+                            userSession.getBasicRemote().sendText(
+                                    dataToJson());
+                        }
                     }
                 }
 
@@ -274,7 +282,10 @@ public class WebSocketEndPoint {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-
+        }
+        
+        public void stopSending() {
+            _keepSending.set(false);
         }
 
         private String dataToJson() {
