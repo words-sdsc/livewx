@@ -533,11 +533,6 @@
         var HWB_arrowOffset = 0;
         var anim_HWB = null;
     </script>
-
- <form>
-  <input id="textMessage" type="text"> <input
-   onclick="sendMessage();" value="send message" type="button">
- </form>
  <br>
  <textarea id="messagesTextArea" rows="10" cols="150"></textarea>
  <script type="text/javascript">
@@ -546,6 +541,7 @@
         var webSocket = new WebSocket(
                 "ws://florian.sdsc.edu:9090/livewx/websocket");
         var messagesTextArea = document.getElementById("messagesTextArea");
+                
         webSocket.onopen = function(message) {
             processOpen(message);
         };
@@ -1893,20 +1889,11 @@
         }
         function processOpen(message) {
             messagesTextArea.value += "server connect..." + "\n";
+            webSocket.send('start');
         }
         function processClose(message) {
             webSocket.send("client disconnect...");
             messagesTextArea.value += "Sever Disconnect..." + "\n";
-        }
-        function sendMessage() {
-            if (textMessage.value != "close") {
-                webSocket.send(textMessage.value);
-                //messagesTextArea.value += "send to server ==> " + textMessage.value+"\n";
-                textMessage.value = "";
-            } else {
-                webSocket.close();
-            }
-
         }
         function processError(message) {
             messagesTextArea.value += "Error..." + "\n";
