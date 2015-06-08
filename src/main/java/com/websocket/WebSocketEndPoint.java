@@ -1,6 +1,5 @@
 package com.websocket;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.security.InvalidParameterException;
@@ -9,6 +8,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -24,138 +25,45 @@ import javax.websocket.server.ServerEndpoint;
 @ServerEndpoint(value = "/websocket")
 public class WebSocketEndPoint {
 
-    static Set<Session> users = Collections
+    private static Set<Session> users = Collections
             .synchronizedSet(new HashSet<Session>());
 
-    String host_sdsc = "172.16.42.86";
-    String group_sdsc = "233.7.117.110";
-    int port_sdsc = 4038;
-
-    String host_ws = "172.16.42.86";
-    String group_ws = "233.7.117.119";
-    int port_ws = 4043;
-
-    String host_tp = "172.16.42.86";
-    String group_tp = "233.7.117.102";
-    int port_tp = 4037;
-
-    String host_bmr = "172.16.42.86";
-    String group_bmr = "233.7.117.125";
-    int port_bmr = 4045;
-
-    String host_bh = "172.16.42.86";
-    String group_bh = "233.7.117.114";
-    int port_bh = 4042;
-
-    String host_lp = "172.16.42.86";
-    String group_lp = "233.7.117.79";
-    int port_lp = 4020;
-
-    String host_ml = "172.16.42.86";
-    String group_ml = "233.7.117.111";
-    int port_ml = 4039;
-
-    String host_mw = "172.16.42.86";
-    String group_mw = "233.7.117.79";
-    int port_mw = 4024;
-
-    String host_cnmz3 = "172.16.42.86";
-    String group_cnmz3 = "233.7.117.111";
-    int port_cnmz3 = 4039;
-
-    String host_nn = "172.16.42.86";
-    String group_nn = "233.7.117.82";
-    int port_nn = 4026;
-
-    String host_pa = "172.16.42.86";
-    String group_pa = "233.7.117.104";
-    int port_pa = 4031;
-
-    String host_plc = "172.16.42.86";
-    String group_plc = "233.7.117.123";
-    int port_plc = 4044;
-
-    String host_rm = "172.16.42.86";
-    String group_rm = "233.7.117.106";
-    int port_rm = 4033;
-
-    String host_sci = "172.16.42.86";
-    String group_sci = "233.7.117.107";
-    int port_sci = 4034;
-
-    String host_sy = "172.16.42.86";
-    String group_sy = "233.7.117.111";
-    int port_sy = 4039;
-
-    String host_so = "172.16.42.86";
-    String group_so = "233.7.117.113";
-    int port_so = 4041;
-
-    String host_smerns = "172.16.42.86";
-    String group_smerns = "233.7.117.128";
-    int port_smerns = 4046;
-
-    String host_hwb = "172.16.42.86";
-    String group_hwb = "233.7.117.79";
-    int port_hwb = 4010;
-
-    NewThread SDSC;
-    NewThread WS;
-    NewThread TP;
-    NewThread BMR;
-    NewThread BH;
-    NewThread LP;
-    NewThread MG;
-    NewThread ML;
-    NewThread MW;
-    NewThread CNMZ3;
-    NewThread NN;
-    NewThread PA;
-    NewThread PLC;
-    NewThread RM;
-    NewThread SCI;
-    NewThread SO;
-    NewThread SMERNS;
-    NewThread HWB;
-
     boolean connect = true;
+    
+    private static BlockingQueue<byte[]> _queue = new LinkedBlockingQueue<byte[]>();
+    
+    private static Map<String,MulticastListenerThread> _listeners =
+            Collections.synchronizedMap(new HashMap<String,MulticastListenerThread>());
 
+    private Set<Source> _sources = new HashSet<Source>();
+    
     @OnOpen
     public void handleOpen(Session userSession) throws InterruptedException,
             IOException {
+
         System.out.println("Server get connected");
-        // ConnectToMulticastListener();
+        
+        if(users.isEmpty()) {
+            _startMulticastListening();
+        }
         users.add(userSession);
-        // System.out.println(ConnectToMulticastListener());
     }
 
     @OnClose
     public void handleClose(Session userSession) {
+        
         System.out.println("Client is now disconnected!");
-        SDSC.stop();
-        WS.stop();
-        TP.stop();
-        BMR.stop();
-        BH.stop();
-        LP.stop();
-        ML.stop();
-        MW.stop();
-        CNMZ3.stop();
-        NN.stop();
-        PA.stop();
-        PLC.stop();
-        RM.stop();
-        SCI.stop();
-        SO.stop();
-        SMERNS.stop();
-        HWB.stop();
+        
         users.remove(userSession);
+        if(users.isEmpty()) {
+            _stopMulticastListening();
+        }        
     }
 
     public void SendResult(Session session) {
 
     }
-
+    
     @OnMessage
     public void handleMessage(String message, Session userSession)
             throws IOException, InterruptedException {
@@ -166,84 +74,13 @@ public class WebSocketEndPoint {
         if (message.equals("stop")) {
             handleClose(userSession);
             System.out.println("Client is now disconnected!");
-            SDSC.stop();
-            WS.stop();
-            TP.stop();
-            BMR.stop();
-            BH.stop();
-            LP.stop();
-            ML.stop();
-            MW.stop();
-            CNMZ3.stop();
-            NN.stop();
-            PA.stop();
-            PLC.stop();
-            RM.stop();
-            SCI.stop();
-            SO.stop();
-            SMERNS.stop();
-            HWB.stop();
-            System.out.println("connection closed");
             
         } else {
+
+            ClientThread thread = new ClientThread(userSession);
+            thread.start();
+            // TODO need to join when done
             
-            SDSC = new NewThread("SDSC", host_sdsc, group_sdsc, port_sdsc,
-                    userSession);
-            SDSC.start();
-
-            WS = new NewThread("WS", host_ws, group_ws, port_ws, userSession);
-            WS.start();
-
-            TP = new NewThread("TP", host_tp, group_tp, port_tp, userSession);
-            TP.start();
-
-            BMR = new NewThread("BMR", host_bmr, group_bmr, port_bmr,
-                    userSession);
-            BMR.start();
-
-            BH = new NewThread("BH", host_bh, group_bh, port_bh, userSession);
-            BH.start();
-
-            LP = new NewThread("LP", host_lp, group_lp, port_lp, userSession);
-            LP.start();
-
-            ML = new NewThread("ML", host_ml, group_ml, port_ml, userSession);
-            ML.start();
-
-            MW = new NewThread("MW", host_mw, group_mw, port_mw, userSession);
-            MW.start();
-
-            CNMZ3 = new NewThread("CNMZ3", host_cnmz3, group_cnmz3, port_cnmz3,
-                    userSession);
-            CNMZ3.start();
-
-            NN = new NewThread("NN", host_nn, group_nn, port_nn, userSession);
-            NN.start();
-
-            PA = new NewThread("PA", host_pa, group_pa, port_pa, userSession);
-            PA.start();
-
-            PLC = new NewThread("PLC", host_plc, group_plc, port_plc,
-                    userSession);
-            PLC.start();
-
-            RM = new NewThread("RM", host_rm, group_rm, port_rm, userSession);
-            RM.start();
-
-            SCI = new NewThread("SCI", host_sci, group_sci, port_sci,
-                    userSession);
-            SCI.start();
-
-            SMERNS = new NewThread("SMERNS", host_smerns, group_smerns,
-                    port_smerns, userSession);
-            SMERNS.start();
-
-            SO = new NewThread("SO", host_so, group_so, port_so, userSession);
-            SO.start();
-
-            HWB = new NewThread("HWB", host_hwb, group_hwb, port_hwb,
-                    userSession);
-            HWB.start();
         }
 
     }
@@ -253,47 +90,173 @@ public class WebSocketEndPoint {
         t.printStackTrace();
     }
 
-    class NewThread extends Thread {
+  private void _loadSources() {
+        
+        _sources.add(new Source("SDSC",
+            "172.16.42.86",
+            "233.7.117.110",
+            4038));
+    
+        _sources.add(new Source("WS",
+            "172.16.42.86",
+            "233.7.117.119",
+            4043));
+    
+        _sources.add(new Source("TP",
+            "172.16.42.86",
+            "233.7.117.102",
+            4037));
+    
+        _sources.add(new Source("BMR",
+            "172.16.42.86",
+            "233.7.117.125",
+            4045));
+    
+        _sources.add(new Source("BH",
+            "172.16.42.86",
+            "233.7.117.114",
+            4042));
+    
+        _sources.add(new Source("LP",
+            "172.16.42.86",
+            "233.7.117.79",
+            4020));
+    
+        _sources.add(new Source("ML",
+            "172.16.42.86",
+            "233.7.117.111",
+            4039));
+    
+        _sources.add(new Source("MW",
+            "172.16.42.86",
+            "233.7.117.79",
+            4024));
+    
+        _sources.add(new Source("CNMZ3",
+            "172.16.42.86",
+            "233.7.117.111",
+            4039));
+    
+        _sources.add(new Source("NN",
+            "172.16.42.86",
+            "233.7.117.82",
+            4026));
+    
+        _sources.add(new Source("PA",
+            "172.16.42.86",
+            "233.7.117.104",
+            4031));
+    
+        _sources.add(new Source("PLC",
+            "172.16.42.86",
+            "233.7.117.123",
+            4044));
+    
+        _sources.add(new Source("RM",
+            "172.16.42.86",
+            "233.7.117.106",
+            4033));
+    
+        _sources.add(new Source("SCI",
+            "172.16.42.86",
+            "233.7.117.107",
+            4034));
+    
+        _sources.add(new Source("SY",
+            "172.16.42.86",
+            "233.7.117.111",
+            4039));
+    
+        _sources.add(new Source("SO",
+            "172.16.42.86",
+            "233.7.117.113",
+            4041));
+    
+        _sources.add(new Source("SMERNS",
+            "172.16.42.86",
+            "233.7.117.128",
+            4046));
+    
+        _sources.add(new Source("HWB",
+            "172.16.42.86",
+            "233.7.117.79",
+            4010));
+    }
 
-        private String name;
-        private String host;
-        private String group;
-        private int port;
+    private void _startMulticastListening() {
+
+        _sources.clear();
+        _loadSources();
+        
+        for(Source source : _sources) {
+            MulticastListenerThread thread;
+            try {
+                thread = new MulticastListenerThread(source.host,
+                        source.group,
+                        source.port,
+                        _queue);
+            } catch (InvalidParameterException | IOException e) {
+                System.err.println("Error creating multicast thread: " + e.getMessage());
+                continue;
+            }
+            thread.start();
+            _listeners.put(source.name, thread);
+        }
+    }
+    
+    private void _stopMulticastListening() {
+        
+        for(MulticastListenerThread thread : _listeners.values()) {
+            thread.stopListening();
+            try {
+                thread.join(5000);
+            } catch (InterruptedException e) {
+                System.err.println("Error joining multicast thread: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        _listeners.clear();
+    }
+    
+    private static class ClientThread extends Thread {
+
         private Session userSession;
-        private Map<String,String> data = new HashMap<String,String>();
+        private Map<String,String> _data = new HashMap<String,String>();
 
-        NewThread(String Name, String Host, String Group, int Port,
-                Session UserSession) {
-            super(Name);
-            name = Name;
-            host = Host;
-            group = Group;
-            port = Port;
+        ClientThread(Session UserSession) {
             userSession = UserSession;
-            data.put("Name", name);
         }
 
         @Override
         public void run() {
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            MulticastListenerThread mlt;
             try {
-                mlt = new MulticastListenerThread(host, group, port, os);
-                mlt.start();
-                // avoid busy waiting
                 while (true) {
-                    Thread.sleep(3000);
-                    String str = os.toString();
-                    os.reset();
 
-                    for (String piece : str.split("\n")) {
-                        data.put("name", name);
+                    final byte[] bytes = _queue.take();
+                    final String str = new String(bytes);
+                    
+                    if(str.trim().isEmpty()) {
+                        continue;
+                    }
+                    
+                    //System.out.println("read " + str);
+                    
+                    for (String line : str.split("\n")) {
+                        
+                        String parts[] = line.split("[:\\-]+");
+                        if(parts.length < 2) {
+                            //System.err.println("WARNING: could not find name in: " +
+                                //line);
+                            continue;
+                        }
+                        
+                        _data.put("Name", parts[1]);
 
-                        for (String temp : piece.split(",")) {
-                            System.out.println(temp);
+                        for (String temp : line.split(",")) {
+                            //System.out.println(temp);
                             String[] value = temp.split("=");
                             if (value.length > 1) {
-                                data.put(value[0], value[1]);
+                                _data.put(value[0], value[1]);
                             }
                         }
                     }
@@ -314,9 +277,11 @@ public class WebSocketEndPoint {
         private String dataToJson() {
 
             JsonObjectBuilder dataJson = Json.createObjectBuilder();
-            for(Map.Entry<String, String> entry: data.entrySet()) {
+            for(Map.Entry<String, String> entry: _data.entrySet()) {
                 dataJson.add(entry.getKey(), entry.getValue());
             }
+            
+            _data.clear();
 
             JsonObject result = Json.createObjectBuilder().add(
                     "message", dataJson).build();
@@ -325,8 +290,25 @@ public class WebSocketEndPoint {
                 writer.write(result);
             }
             String str = sw.toString();
-            System.out.println(str);
+            //System.out.println(str);
             return str;
         }
     }
+    
+    private static class Source {
+
+        public Source(String name, String host, String group, int port) {
+            this.name = name;
+            this.host = host;
+            this.group = group;
+            this.port = port;
+        }
+        
+        public String name;        
+        public String host;
+        public String group;
+        public int port;
+        
+    }
+    
 }

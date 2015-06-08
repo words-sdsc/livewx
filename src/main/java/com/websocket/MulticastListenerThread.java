@@ -1,55 +1,44 @@
 package com.websocket;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.security.InvalidParameterException;
-//import java.util.Random;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MulticastListenerThread extends Thread {
-    //private static final Random r = new Random();
     private MulticastSocket s;
-    //private InetAddress address;
-    private static boolean sentinel = true;
-    private OutputStream out;
+    private AtomicBoolean sentinel = new AtomicBoolean(true);
+    private BlockingQueue<byte[]> _queue;
 
     public MulticastListenerThread(String host, String group, int port,
-            OutputStream out) throws InvalidParameterException, IOException,
+            BlockingQueue<byte[]> queue) throws InvalidParameterException, IOException,
             UnknownHostException {
         if (port <= 1000) {
             throw new InvalidParameterException("Illegal port value");
         }
 
-        // address is likely to be same for all threads.
-        // it would be nice if it could be static.
-        // need to make sure its initialized once and only once
-        // run() cannot catch checkedExceptions.
-        //address = InetAddress.getByName(host);
         s = new MulticastSocket(port);
         s.joinGroup(InetAddress.getByName(group));
-        this.out = out;
+        _queue = queue;
     }
 
-    public static void stopListening() {
-        sentinel = false;
+    public void stopListening() {
+        sentinel.set(false);
     }
 
     @Override
     public void run() {
         try {
-            // System.out.println("Starting\n");
-            while (true == sentinel) {
+            while (sentinel.get()) {
                 byte buf[] = new byte[1024];
                 DatagramPacket pack = new DatagramPacket(buf, buf.length);
                 s.receive(pack);
-                // System.out.println(pack.getAddress().toString() + ":" +
-                // pack.getPort());
-                out.write(pack.getData(), 0, pack.getLength());
+                _queue.put(pack.getData());
             }
-            // System.out.println("Stopping\n");
         } catch (Exception e) {
             // System.out.println(e.getMessage());
         }
