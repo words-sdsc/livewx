@@ -91,32 +91,27 @@ public class WebSocketEndPoint {
     }
 
   private void _loadSources() {
-        
-        _sources.add(new Source("SDSC",
-            "172.16.42.86",
-            "233.7.117.110",
-            4038));
-    
-        _sources.add(new Source("WS",
-            "172.16.42.86",
-            "233.7.117.119",
-            4043));
-    
-        _sources.add(new Source("TP",
-            "172.16.42.86",
-            "233.7.117.102",
-            4037));
-    
+         
+      _sources.add(new Source("BH",
+              "172.16.42.86",
+              "233.7.117.114",
+              4042));
+
         _sources.add(new Source("BMR",
             "172.16.42.86",
             "233.7.117.125",
             4045));
     
-        _sources.add(new Source("BH",
+        _sources.add(new Source("CNMZ3",
             "172.16.42.86",
-            "233.7.117.114",
-            4042));
-    
+            "233.7.117.82",
+            4026));
+
+        _sources.add(new Source("HWB",
+            "172.16.42.86",
+            "233.7.117.79",
+            4021));
+
         _sources.add(new Source("LP",
             "172.16.42.86",
             "233.7.117.79",
@@ -132,16 +127,13 @@ public class WebSocketEndPoint {
             "233.7.117.79",
             4024));
     
-        _sources.add(new Source("CNMZ3",
-            "172.16.42.86",
-            "233.7.117.111",
-            4039));
-    
+        /* TODO: is this NOAA-NWS?
         _sources.add(new Source("NN",
             "172.16.42.86",
             "233.7.117.82",
             4026));
-    
+         */
+        
         _sources.add(new Source("PA",
             "172.16.42.86",
             "233.7.117.104",
@@ -164,8 +156,8 @@ public class WebSocketEndPoint {
     
         _sources.add(new Source("SY",
             "172.16.42.86",
-            "233.7.117.111",
-            4039));
+            "233.7.117.105",
+            4032));
     
         _sources.add(new Source("SO",
             "172.16.42.86",
@@ -176,11 +168,22 @@ public class WebSocketEndPoint {
             "172.16.42.86",
             "233.7.117.128",
             4046));
-    
-        _sources.add(new Source("HWB",
+
+        _sources.add(new Source("SDSC",
+                "172.16.42.86",
+                "233.7.117.110",
+                4038));
+        
+        _sources.add(new Source("WS",
             "172.16.42.86",
-            "233.7.117.79",
-            4010));
+            "233.7.117.119",
+            4043));
+    
+        _sources.add(new Source("TP",
+            "172.16.42.86",
+            "233.7.117.102",
+            4027));
+
     }
 
     private void _startMulticastListening() {
