@@ -26,26 +26,17 @@ import javax.websocket.server.ServerEndpoint;
 @ServerEndpoint(value = "/websocket")
 public class WebSocketEndPoint {
 
-    private static Map<Session,ClientThread> _clients = Collections
-            .synchronizedMap(new HashMap<Session,ClientThread>());
-    
-    private static BlockingQueue<byte[]> _queue = new LinkedBlockingQueue<byte[]>();
-    
-    private static Map<String,MulticastListenerThread> _listeners =
-            Collections.synchronizedMap(new HashMap<String,MulticastListenerThread>());
-
-    private static Set<Source> _sources = new HashSet<Source>();
-    
     @OnOpen
     public void handleOpen(Session userSession) throws InterruptedException,
             IOException {
-        //System.out.println("Server get connected");
+
+        //System.out.println("Client connected: " + userSession);
     }
 
     @OnClose
     public void handleClose(Session userSession) {
         
-        //System.out.println("Client is now disconnected!");
+        //System.out.println("Client disconnected: " + userSession);
         
         ClientThread thread = _clients.remove(userSession);
         thread.stopSending();
@@ -70,13 +61,18 @@ public class WebSocketEndPoint {
             handleClose(userSession);
         } else if(message.equals("start")) {
 
+            //System.out.println("Client sent start: " + userSession);
+
             synchronized(_clients) {
 
                 if(_clients.isEmpty()) {
                     _startMulticastListening();
                 }
+
+                BlockingQueue<byte[]> writeQueue = new LinkedBlockingQueue<byte[]>();
+                _writeQueues.add(writeQueue);
     
-                ClientThread thread = new ClientThread(userSession);
+                ClientThread thread = new ClientThread(userSession, writeQueue);
                 thread.start();
                 
                 _clients.put(userSession, thread);
@@ -188,10 +184,13 @@ public class WebSocketEndPoint {
 
     private static void _startMulticastListening() {
 
-        System.out.println("start multicast listening");
+        //System.out.println("start multicast listening");
         
         _sources.clear();
         _loadSources();
+        
+        _dispatcher = new DispatcherThread();
+        _dispatcher.start();
         
         for(Source source : _sources) {
             MulticastListenerThread thread;
@@ -199,7 +198,7 @@ public class WebSocketEndPoint {
                 thread = new MulticastListenerThread(source.host,
                         source.group,
                         source.port,
-                        _queue);
+                        _multicastQueue);
             } catch (InvalidParameterException | IOException e) {
                 System.err.println("Error creating multicast thread: " + e.getMessage());
                 continue;
@@ -211,28 +210,38 @@ public class WebSocketEndPoint {
     
     private static void _stopMulticastListening() {
         
-        System.out.println("stop multicast listening");
+        //System.out.println("stop multicast listening");
+
+        _dispatcher.stopDispatching();
+        try {
+            _dispatcher.join(5000);
+        } catch(InterruptedException e) {
+            System.err.println("Error joining dispatcher thread: " + e.getMessage());
+            e.printStackTrace();
+        }
+        _dispatcher = null;
 
         for(MulticastListenerThread thread : _listeners.values()) {
             thread.stopListening();
             try {
-                thread.join(5000);
+                thread.join(1000);
             } catch (InterruptedException e) {
                 System.err.println("Error joining multicast thread: " + e.getMessage());
                 e.printStackTrace();
             }
         }
         _listeners.clear();
+    
+        _multicastQueue.clear();
+
+        //System.out.println("done stopping multicast listening");
     }
     
     private static class ClientThread extends Thread {
 
-        private Session userSession;
-        private Map<String,String> _data = new HashMap<String,String>();
-        private AtomicBoolean _keepSending = new AtomicBoolean(true);
-
-        ClientThread(Session UserSession) {
-            userSession = UserSession;
+        ClientThread(Session session, BlockingQueue<byte[]> queue) {
+            _session = session;
+            _queue = queue;
         }
 
         @Override
@@ -269,9 +278,9 @@ public class WebSocketEndPoint {
                         }
                     }
                     
-                    synchronized(userSession) {
+                    synchronized(_session) {
                         if(_keepSending.get()) {
-                            userSession.getBasicRemote().sendText(
+                            _session.getBasicRemote().sendText(
                                     dataToJson());
                         }
                     }
@@ -307,6 +316,40 @@ public class WebSocketEndPoint {
             //System.out.println(str);
             return str;
         }
+       
+        private BlockingQueue<byte[]> _queue;
+        private Session _session;
+        private Map<String,String> _data = new HashMap<String,String>();
+        private AtomicBoolean _keepSending = new AtomicBoolean(true);
+    }
+
+    private static class DispatcherThread extends Thread {
+        
+        @Override
+        public void run() {
+
+            try {
+                while(!_stop.get()) {
+            
+                    byte[] data = _multicastQueue.take();
+
+                    //synchronized(_writeQueues) {
+                        for(BlockingQueue<byte[]> writeQueue: _writeQueues) {
+                            writeQueue.put(data);    
+                        }
+                    //}
+                }
+            } catch(InterruptedException e) {
+                System.err.println("Interrupted exception in Dispatcher thread: " +  e.getMessage());
+                e.printStackTrace();    
+            }
+        }
+
+        public void stopDispatching() {
+            _stop.set(true);
+        }
+
+        private AtomicBoolean _stop = new AtomicBoolean(false);
     }
     
     private static class Source {
@@ -325,4 +368,18 @@ public class WebSocketEndPoint {
         
     }
     
+    private static Map<Session,ClientThread> _clients = Collections
+            .synchronizedMap(new HashMap<Session,ClientThread>());
+    
+    private static BlockingQueue<byte[]> _multicastQueue = new LinkedBlockingQueue<byte[]>();
+    
+    private static Map<String,MulticastListenerThread> _listeners =
+            Collections.synchronizedMap(new HashMap<String,MulticastListenerThread>());
+
+    private static Set<BlockingQueue<byte[]>> _writeQueues = Collections
+            .synchronizedSet(new HashSet<BlockingQueue<byte[]>>());
+
+    private static Set<Source> _sources = new HashSet<Source>();
+
+    private static DispatcherThread _dispatcher;
 }
