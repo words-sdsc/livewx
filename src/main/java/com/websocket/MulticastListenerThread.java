@@ -10,8 +10,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MulticastListenerThread extends Thread {
-    private MulticastSocket s;
-    private AtomicBoolean sentinel = new AtomicBoolean(true);
+    private MulticastSocket _socket;
+    private InetAddress _groupInetAddress;
+    private AtomicBoolean _sentinel = new AtomicBoolean(true);
     private BlockingQueue<byte[]> _queue;
 
     public MulticastListenerThread(String host, String group, int port,
@@ -21,26 +22,36 @@ public class MulticastListenerThread extends Thread {
             throw new InvalidParameterException("Illegal port value");
         }
 
-        s = new MulticastSocket(port);
-        s.joinGroup(InetAddress.getByName(group));
+        _groupInetAddress = InetAddress.getByName(group);
+        _socket = new MulticastSocket(port);
+        _socket.joinGroup(_groupInetAddress);
         _queue = queue;
     }
 
     public void stopListening() {
-        sentinel.set(false);
+        _sentinel.set(false);
     }
 
     @Override
     public void run() {
         try {
-            while (sentinel.get()) {
+            while (_sentinel.get()) {
                 byte buf[] = new byte[1024];
                 DatagramPacket pack = new DatagramPacket(buf, buf.length);
-                s.receive(pack);
+                _socket.receive(pack);
                 _queue.put(pack.getData());
             }
         } catch (Exception e) {
             // System.out.println(e.getMessage());
+        } finally {
+            try {
+                _socket.leaveGroup(_groupInetAddress);
+            } catch (IOException e) {
+                System.err.println("Error leaving multicast group: " + e.getMessage());
+                e.printStackTrace();
+            }
+            _socket.close();
+            _socket = null;
         }
     }
 }
