@@ -206,6 +206,9 @@ public class WebSocketEndPoint {
             thread.start();
             _listeners.put(source.name, thread);
         }
+        
+        //System.out.println("done start multicast listening");
+
     }
     
     private static void _stopMulticastListening() {
@@ -279,13 +282,14 @@ public class WebSocketEndPoint {
                     }
                     
                     synchronized(_session) {
-                        if(_keepSending.get()) {
+                        if(_keepSending.get() && _session.isOpen()) {
                             _session.getBasicRemote().sendText(
                                     dataToJson());
+                        } else {
+                            break;
                         }
                     }
                 }
-
             } catch (InvalidParameterException | IOException
                     | InterruptedException e) {
                 // TODO Auto-generated catch block
