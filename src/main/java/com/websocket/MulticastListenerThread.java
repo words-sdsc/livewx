@@ -10,11 +10,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MulticastListenerThread extends Thread {
-    private MulticastSocket _socket;
-    private InetAddress _groupInetAddress;
-    private AtomicBoolean _sentinel = new AtomicBoolean(true);
-    private BlockingQueue<byte[]> _queue;
-
+    
     public MulticastListenerThread(String host, String group, int port,
             BlockingQueue<byte[]> queue) throws InvalidParameterException, IOException,
             UnknownHostException {
@@ -30,6 +26,7 @@ public class MulticastListenerThread extends Thread {
 
     public void stopListening() {
         _sentinel.set(false);
+        _closeSocket();
     }
 
     @Override
@@ -42,8 +39,17 @@ public class MulticastListenerThread extends Thread {
                 _queue.put(pack.getData());
             }
         } catch (Exception e) {
-            // System.out.println(e.getMessage());
+            // ignore the error if we should stop
+            if(_sentinel.get()) {
+                System.err.println("Error reading on multicast socket: " + e.getMessage());
+            }
         } finally {
+            _closeSocket();
+        }
+    }
+    
+    private void _closeSocket() {
+        if(_socket != null) {
             try {
                 _socket.leaveGroup(_groupInetAddress);
             } catch (IOException e) {
@@ -54,4 +60,10 @@ public class MulticastListenerThread extends Thread {
             _socket = null;
         }
     }
+    
+    private MulticastSocket _socket;
+    private InetAddress _groupInetAddress;
+    private AtomicBoolean _sentinel = new AtomicBoolean(true);
+    private BlockingQueue<byte[]> _queue;
+
 }
