@@ -4,7 +4,6 @@
 <head>
 <meta charset="UTF-8">
 <title>WIFIRE Live Weather</title>
-<link rel="stylesheet" href="lib/style.css" />
 <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
 <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js" type="text/javascript"></script>
 <script src="lib/LetterIcon.js" type="text/javascript"></script>
@@ -343,29 +342,21 @@
              
              var station = stations[name];
              
-             if (!showWind) {
-                 if (station.Arrow != null && station.arrowHead != null) {
-                     window.map.removeLayer(station.Arrow);
-                     window.map.removeLayer(station.arrowHead);
-                 }
+             if (!showWind && station.Arrow != null && station.arrowHead != null) {
+                 window.map.removeLayer(station.Arrow);
+                 window.map.removeLayer(station.arrowHead);
+                 station.Arrow = null;
+                 station.arrowHead = null;
              }
              
-             if (!showTemp) {
-                 if (station.tempCircle != null)
-                     window.map.removeLayer(station.tempCircle);
+             if (!showTemp && station.tempCircle != null) {
+                 window.map.removeLayer(station.tempCircle);
+                 station.tempCircle = null;
              }
                  
-             if (!showHumid) {
-                 if(stations.humidCircle != null) {            
-                     window.map.removeLayer(station.humidCircle);
-                     station.humidCircle = new L.circleMarker(station.latlng, {
-                         radius : 20,
-                       }).bindLabel(station.name, {className : 'station-label', 
-                           offset : [-10,-10],
-                           noHide : true}).
-                       addTo(map).
-                       showLabel();
-                 }
+             if (!showHumid && station.humidCircle != null) {            
+                 window.map.removeLayer(station.humidCircle);
+                 station.humidCircle = null;
             }
         } 
     }
