@@ -83,46 +83,55 @@ public class WebSocketEndPoint {
 
     @OnError
     public void handleError(Throwable t) {
+        System.err.println("Error: " + t.getMessage());
         t.printStackTrace();
     }
 
   private static void _loadSources() {
          
-      _sources.add(new Source("BH",
+      _sources.put("BH", new Source("BH",
           "172.16.42.86",
           "233.7.117.114",
-          4042));
+          4042,
+          "33.33", "-116.92"));
 
-        _sources.add(new Source("BMR",
+        _sources.put("BMR", new Source("BMR",
             "172.16.42.86",
             "233.7.117.125",
-            4045));
+            4045,
+            "33.16", "-116.811"));
     
-        _sources.add(new Source("CNMZ3",
+        _sources.put("CNMZ3", new Source("CNMZ3",
             "172.16.42.86",
             "233.7.117.82",
-            4026));
+            4026,
+            "32.67", "-117.24"));
 
-        _sources.add(new Source("HWB",
+        _sources.put("HWB", new Source("HWB",
             "172.16.42.86",
             "233.7.117.79",
-            4021));
+            4021,
+            "33.03", "-116.96"));
 
-        _sources.add(new Source("LP",
+        _sources.put("LP", new Source("LP",
             "172.16.42.86",
             "233.7.117.79",
-            4020));
-    
-        _sources.add(new Source("ML",
+            4020,
+            "32.70", "-116.76"));
+
+        _sources.put("ML", new Source("ML",
             "172.16.42.86",
             "233.7.117.111",
-            4039));
-    
-        _sources.add(new Source("MW",
+            4039,
+            "32.89", "-116.42"));
+
+        _sources.put("MW", new Source("MW",
             "172.16.42.86",
             "233.7.117.79",
-            4024));
-    
+            4024,
+            "33.01", "-116.97"));
+
+  
         /* TODO: is this NOAA-NWS?
         _sources.add(new Source("NN",
             "172.16.42.86",
@@ -130,55 +139,66 @@ public class WebSocketEndPoint {
             4026));
          */
         
-        _sources.add(new Source("PA",
+        _sources.put("PA", new Source("PA",
             "172.16.42.86",
             "233.7.117.104",
-            4031));
+            4031,
+            "33.35", "-116.98"));
+
     
-        _sources.add(new Source("PLC",
+        _sources.put("PLC", new Source("PLC",
             "172.16.42.86",
             "233.7.117.123",
-            4044));
-    
-        _sources.add(new Source("RM",
+            4044,
+            "33.32", "-116.68"));
+
+        _sources.put("RM", new Source("RM",
             "172.16.42.86",
             "233.7.117.106",
-            4033));
-    
-        _sources.add(new Source("SCI",
+            4033,
+            "33.40", "-117.19"));
+
+        _sources.put("SCI", new Source("SCI",
             "172.16.42.86",
             "233.7.117.107",
-            4034));
-    
-        _sources.add(new Source("SY",
+            4034,
+            "32.91", "-118.48"));
+
+        _sources.put("SY", new Source("SY",
             "172.16.42.86",
             "233.7.117.105",
-            4032));
-    
-        _sources.add(new Source("SO",
+            4032,
+            "33.13", "-116.61"));
+
+        _sources.put("SO", new Source("SO",
             "172.16.42.86",
             "233.7.117.113",
-            4041));
-    
-        _sources.add(new Source("SMERNS",
+            4041,
+            "33.38", "-116.62"));
+
+        _sources.put("SMERNS", new Source("SMERNS",
             "172.16.42.86",
             "233.7.117.128",
-            4046));
+            4046,
+            "33.46", "-117.17"));
 
-        _sources.add(new Source("SDSC",
+        _sources.put("SDSC", new Source("SDSC",
                 "172.16.42.86",
                 "233.7.117.110",
-                4038));
-        
-        _sources.add(new Source("WS",
+                4038,
+                "32.88", "-117.24"));
+
+        _sources.put("WS", new Source("WS",
             "172.16.42.86",
             "233.7.117.119",
-            4043));
-    
-        _sources.add(new Source("TP",
+            4043,
+            "33.27", "-116.64"));
+
+        _sources.put("TP", new Source("TP",
             "172.16.42.86",
             "233.7.117.102",
-            4027));
+            4027,
+            "33.52", "-116.43"));
 
     }
 
@@ -192,7 +212,7 @@ public class WebSocketEndPoint {
         _dispatcher = new DispatcherThread();
         _dispatcher.start();
         
-        for(Source source : _sources) {
+        for(Source source : _sources.values()) {
             MulticastListenerThread thread;
             try {
                 thread = new MulticastListenerThread(source.host,
@@ -249,16 +269,20 @@ public class WebSocketEndPoint {
 
         @Override
         public void run() {
+            
+            Map<String,String> data = new HashMap<String,String>();
+            Set<String> stationsSent = new HashSet<String>();
+
             try {
                 while (_keepSending.get()) {
 
-                    final byte[] bytes = _queue.take();
+                    final byte[] bytes = _queue.take();                    
                     final String str = new String(bytes);
                     
                     if(str.trim().isEmpty()) {
                         continue;
                     }
-                    
+                                        
                     //System.out.println("read " + str);
                     
                     for (String line : str.split("\n")) {
@@ -270,13 +294,22 @@ public class WebSocketEndPoint {
                             continue;
                         }
                         
-                        _data.put("Name", parts[1]);
+                        String stationName = parts[1];
+                        
+                        data.put("Name", stationName);
+                        
+                        if(!stationsSent.contains(stationName)) {
+                            Source station = _sources.get(stationName);
+                            data.put("lat", station.lat);
+                            data.put("lng", station.lng);
+                            stationsSent.add(stationName);
+                        }
 
                         for (String temp : line.split(",")) {
                             //System.out.println(temp);
                             String[] value = temp.split("=");
                             if (value.length > 1) {
-                                _data.put(value[0], value[1]);
+                                data.put(value[0], value[1]);
                             }
                         }
                     }
@@ -284,11 +317,14 @@ public class WebSocketEndPoint {
                     synchronized(_session) {
                         if(_keepSending.get() && _session.isOpen()) {
                             _session.getBasicRemote().sendText(
-                                    dataToJson());
+                                    _dataToJson(data));
                         } else {
                             break;
                         }
                     }
+                    
+                    data.clear();
+
                 }
             } catch (InvalidParameterException | IOException
                     | InterruptedException e) {
@@ -301,15 +337,13 @@ public class WebSocketEndPoint {
             _keepSending.set(false);
         }
 
-        private String dataToJson() {
+        private String _dataToJson(Map<String,String> data) {
 
             JsonObjectBuilder dataJson = Json.createObjectBuilder();
-            for(Map.Entry<String, String> entry: _data.entrySet()) {
+            for(Map.Entry<String, String> entry: data.entrySet()) {
                 dataJson.add(entry.getKey(), entry.getValue());
             }
             
-            _data.clear();
-
             JsonObject result = Json.createObjectBuilder().add(
                     "message", dataJson).build();
             StringWriter sw = new StringWriter();
@@ -323,7 +357,6 @@ public class WebSocketEndPoint {
        
         private BlockingQueue<byte[]> _queue;
         private Session _session;
-        private Map<String,String> _data = new HashMap<String,String>();
         private AtomicBoolean _keepSending = new AtomicBoolean(true);
     }
 
@@ -358,17 +391,21 @@ public class WebSocketEndPoint {
     
     private static class Source {
 
-        public Source(String name, String host, String group, int port) {
+        public Source(String name, String host, String group, int port, String lat, String lng) {
             this.name = name;
             this.host = host;
             this.group = group;
             this.port = port;
+            this.lat = lat;
+            this.lng = lng;
         }
         
         public String name;        
         public String host;
         public String group;
         public int port;
+        public String lat;
+        public String lng;
         
     }
     
@@ -383,7 +420,7 @@ public class WebSocketEndPoint {
     private static Set<BlockingQueue<byte[]>> _writeQueues = Collections
             .synchronizedSet(new HashSet<BlockingQueue<byte[]>>());
 
-    private static Set<Source> _sources = new HashSet<Source>();
+    private static Map<String,Source> _sources = new HashMap<String,Source>();
 
     private static DispatcherThread _dispatcher;
 }
