@@ -5,28 +5,21 @@
 <meta charset="UTF-8">
 <title>WIFIRE Live Weather</title>
 <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
-<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js" type="text/javascript"></script>
+<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet-src.js" type="text/javascript"></script>
 <script src="lib/LetterIcon.js" type="text/javascript"></script>
 <script src="lib/L.Symbol.js" type="text/javascript"></script>
 <script src="lib/leaflet.polylineDecorator.min.js" type="text/javascript"></script>
 </head>
 <body>
-
- <input onchange="checkLayer()" type="checkbox" name="menu" id="wind" value="1" checked>wind
- <input onchange="checkLayer()" type="checkbox" name="menu" id="temperature" value="2" checked>temperature
- <input onchange="checkLayer()" type="checkbox" name="menu" id="humidity" value="5" checked>humidity
- <br>
  <div id="map" style="width: 1200px; height: 600px; border: 1px solid #ccc"></div>
  <script type="text/javascript">
-        
-     var showWind = true;
-     var showTemp = true;
-     var showHumid = true;
-    
+ 
+     var tempLayer = new L.LayerGroup();
+     var humidLayer = new L.LayerGroup();
+     var windLayer = new L.LayerGroup();
+ 
      var stations = {};
-         
-     checkLayer();
-     
+              
      // markers sizes
      var CIRCLE_R = 12000;
      var ARROW_R = 0.12;
@@ -36,19 +29,48 @@
     
      // init map
      var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-         osmAttrib = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors', osm = L
-         .tileLayer(osmUrl, {
+         osmAttrib = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+         osm = L.tileLayer(osmUrl, {
              maxZoom : 17,
              attribution : osmAttrib
          });
      var map = new L.Map('map', {
-         layers : [ osm ],
+         layers : [ osm, tempLayer, humidLayer, windLayer ],
          center : new L.LatLng(center[0], center[1]),
          zoom : 9
      });
 
-     var webSocket = new WebSocket(
-            "ws://florian.sdsc.edu:9090/livewx/websocket");
+     var layers = new L.control.layers({}, {
+         "Wind" : windLayer,
+         "Temp" : tempLayer,
+         "Humid" : humidLayer
+         },
+         {collapsed : false})
+         .addTo(map);
+          
+     map.on('overlayadd', function(event) {
+         
+         // NOTE: no bringToFront() for wind markers?
+         //windLayer.eachLayer(function (layer) {
+             //if(layer.bringToFront === "function") {
+                 //layer.bringToFront();
+             //}
+         //});
+
+         if(map.hasLayer(humidLayer)) {
+             humidLayer.eachLayer(function (layer) {
+                 layer.bringToBack();
+             });
+         }
+
+         if(map.hasLayer(tempLayer)) {
+             tempLayer.eachLayer(function (layer) {
+                 layer.bringToBack();
+             });
+         }
+     });
+     
+     var webSocket = new WebSocket("ws://florian.sdsc.edu:9090/livewx/websocket");
                 
      webSocket.onopen = function(message) {
          processOpen(message);
@@ -57,14 +79,15 @@
      webSocket.onclose = function(message) {
          processClose(message);
      };
+     
      webSocket.onerror = function(message) {
          processError(message);
      };
  
      get_humidity_color = function(ua) {
-         if (ua == "")
+         if (ua == "") {
              return '#FFFFFF';
-         if (ua <= 10) {
+         } else if (ua <= 10) {
              return '#ff0000';
          } else if (ua <= 20) {
              return '#ff9966';
@@ -88,9 +111,9 @@
      }
      
      select_th_color = function(th) {
-         if (th == "")
+         if (th == "") {
              return "#FFFFFF";
-         if (th < -10) {
+         } else if (th < -10) {
              return "#000066"
          } else if (th < -7) {
              return "#333399"
@@ -177,26 +200,19 @@
      webSocket.onmessage = function processMessage(message) {
          
          var jsonData = JSON.parse(message.data);
+         
          if (jsonData.message != null) {
  
              var message = jsonData.message;
              var code = message.Name;
              var station = stations[code];
-
-             if(parseFloat(message.lat) == 1) {
-                 stations[code] = { lat : -1 };
-                 return;
-             }
-
-             if(station != null && station.lat == -1) {
-                 return;
-             }
              
              if(station == null) {
              
                  station = {};
                  
-                 station.latlng = new L.LatLng(parseFloat(message.lat),
+                 station.latlng = new L.LatLng(
+                         parseFloat(message.lat),
                          parseFloat(message.lng));
                  station.name = message.Name;
                  
@@ -218,12 +234,11 @@
                  .addTo(map);
                  
                  stations[code] = station;
-                 
              }
                     
              //show_data_in_popup(station.humidCircle, jsonData);
              
-             if (jsonData.message.hasOwnProperty('Ta') && showTemp) {                 
+             if (jsonData.message.hasOwnProperty('Ta') && map.hasLayer(tempLayer)) {                 
                  var ta = jsonData.message.Ta.split(".");
                  var color = select_th_color(ta[0]);
                  if(station.tempCircle == null) {
@@ -232,43 +247,37 @@
                          weight : 1,
                          opacity : 1,
                          fillColor : color,
-                         fillOpacity : CIRCLE_T
-                         }).addTo(map).bringToBack();                         
+                         fillOpacity : CIRCLE_T,
+                         zIndex : 5
+                         })
+                     .addTo(tempLayer);
                  } else {
                      station.tempCircle.setStyle({fillColor : color});   
                  }
              }
              
-             if (jsonData.message.hasOwnProperty('Ua')) {
+             if (jsonData.message.hasOwnProperty('Ua') && map.hasLayer(humidLayer)) {
                  
                  var opened = false;
                  //if (PA.getPopup() != null) {
                      //opened = PA.getPopup()._isOpen;
                  //}
                  
-                 if(showHumid) {
-                     var ua = jsonData.message.Ua.split("P");
-                     var color = get_humidity_color(parseFloat(ua[0]));
-                     if(station.humidCircle == null) {
-                         station.humidCircle = new L.circleMarker(station.latlng, {
-                             radius : 20,
-                             color : '#000',
-                             weight : 1,
-                             opacity : 1,
-                             fillColor : color,
-                             fillOpacity : 1
-                             })
-                            .bindPopup(info_output(jsonData))
-                            .addTo(map)
-                            .bringToFront();
-                         
-                         if(station.Arrow != null) {
-                             station.Arrow.bringToFront();
-                         }
-                         
-                     } else {
-                         station.humidCircle.setStyle({fillColor : color});                         
-                     }
+                 var ua = jsonData.message.Ua.split("P");
+                 var color = get_humidity_color(parseFloat(ua[0]));
+                 if(station.humidCircle == null) {
+                     station.humidCircle = new L.circleMarker(station.latlng,
+                         {radius : 20,
+                         color : '#000',
+                         weight : 1,
+                         opacity : 1,
+                         fillColor : color,
+                         fillOpacity : 1})
+                        .bindPopup(info_output(jsonData))
+                        .addTo(humidLayer);
+                                                  
+                 } else {
+                    station.humidCircle.setStyle({fillColor : color});
                  }
                  
                  //if (opened) {
@@ -276,8 +285,9 @@
                  //}
              }
              
-             if (showWind && jsonData.message.hasOwnProperty('Dm')
-                 && jsonData.message.hasOwnProperty('Sm')) {
+             if (jsonData.message.hasOwnProperty('Dm')
+                 && jsonData.message.hasOwnProperty('Sm')
+                 && map.hasLayer(windLayer)) {
                      
                  var dm = parseFloat(jsonData.message.Dm.split("D")[0]);
                  var sm = parseFloat(jsonData.message.Sm.split("D")[0]);
@@ -288,12 +298,11 @@
                  if (station.Arrow == null) {
                      station.Arrow = L.polyline(latlngs,
                          {color : '#000',
-                         weight : 1,
+                         weight : 3,
                          opacity : 1,
-                         }).addTo(map)
-                         .bringToFront();                            
+                         }).addTo(windLayer);
                      station.arrowHead = L.polylineDecorator(station.Arrow)
-                         .addTo(map);
+                         .addTo(windLayer);
                      station.arrowHead.setPatterns([ {
                          offset : 100 + '%',
                          repeat : 0,
@@ -330,37 +339,7 @@
      
      function processError(message) {
          //messagesTextArea.value += "Error..." + "\n";
-     }
-     
-     function checkLayer() {
-         
-         showWind = document.getElementById("wind").checked;
-         showTemp = document.getElementById("temperature").checked;
-         showHumid = document.getElementById("humidity").checked;
-
-         for(var name in stations) {
-             
-             var station = stations[name];
-             
-             if (!showWind && station.Arrow != null && station.arrowHead != null) {
-                 window.map.removeLayer(station.Arrow);
-                 window.map.removeLayer(station.arrowHead);
-                 station.Arrow = null;
-                 station.arrowHead = null;
-             }
-             
-             if (!showTemp && station.tempCircle != null) {
-                 window.map.removeLayer(station.tempCircle);
-                 station.tempCircle = null;
-             }
-                 
-             if (!showHumid && station.humidCircle != null) {            
-                 window.map.removeLayer(station.humidCircle);
-                 station.humidCircle = null;
-            }
-        } 
-    }
-    
-    </script>
+     }    
+</script>
 </body>
 </html>
