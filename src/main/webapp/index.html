@@ -5,8 +5,8 @@
 <meta charset="UTF-8">
 <title>WIFIRE Live Weather</title>
 <link rel="stylesheet" href="lib/style.css" />
-<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
-<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet-src.js" type="text/javascript"></script>
+<link rel="stylesheet" href="lib/leaflet.css" />
+<script src="lib/leaflet.js" type="text/javascript"></script>
 <script src="lib/LetterIcon.js" type="text/javascript"></script>
 <script src="lib/L.Symbol.js" type="text/javascript"></script>
 <script src="lib/leaflet.polylineDecorator.min.js" type="text/javascript"></script>
@@ -250,9 +250,8 @@
              }
              
              if (jsonData.message.hasOwnProperty('Ua') && map.hasLayer(humidLayer)) {
-                                  
                  var ua = jsonData.message.Ua.split("P");
-                 station.data.humidity = parseFloat(ta[0]);
+                 station.data.humidity = parseFloat(ua[0]);
                  var color = get_humidity_color(station.data.humidity);
                  if(station.humidCircle == null) {
                      station.humidCircle = new L.circleMarker(station.latlng,
