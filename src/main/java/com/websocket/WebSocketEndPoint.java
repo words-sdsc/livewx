@@ -89,19 +89,19 @@ public class WebSocketEndPoint {
 
   private static void _loadSources() {
          
-      _sources.put("BH", new Source("BH",
+      _sources.put("BH", new Source("Boucher Hill",
           "172.16.42.86",
           "233.7.117.114",
           4042,
           "33.33", "-116.92"));
 
-        _sources.put("BMR", new Source("BMR",
+        _sources.put("BMR", new Source("Black Mt.",
             "172.16.42.86",
             "233.7.117.125",
             4045,
             "33.16", "-116.811"));
     
-        _sources.put("CNMZ3", new Source("CNMZ3",
+        _sources.put("CNMZ3", new Source("Cabrillo",
             "172.16.42.86",
             "233.7.117.82",
             4026,
@@ -113,19 +113,19 @@ public class WebSocketEndPoint {
             4021,
             "33.03", "-116.96"));
 
-        _sources.put("LP", new Source("LP",
+        _sources.put("LP", new Source("Lyon's Pk.",
             "172.16.42.86",
             "233.7.117.79",
             4020,
             "32.70", "-116.76"));
 
-        _sources.put("ML", new Source("ML",
+        _sources.put("ML", new Source("Mt. Laguna",
             "172.16.42.86",
             "233.7.117.111",
             4039,
             "32.89", "-116.42"));
 
-        _sources.put("MW", new Source("MW",
+        _sources.put("MW", new Source("Mt. Woodson",
             "172.16.42.86",
             "233.7.117.79",
             4024,
@@ -139,38 +139,38 @@ public class WebSocketEndPoint {
             4026));
          */
         
-        _sources.put("PA", new Source("PA",
+        _sources.put("PA", new Source("Pala",
             "172.16.42.86",
             "233.7.117.104",
             4031,
             "33.35", "-116.98"));
 
     
-        _sources.put("PLC", new Source("PLC",
+        _sources.put("PLC", new Source("Puerta La Cruz",
             "172.16.42.86",
             "233.7.117.123",
             4044,
             "33.32", "-116.68"));
 
-        _sources.put("RM", new Source("RM",
+        _sources.put("RM", new Source("Red Mt.",
             "172.16.42.86",
             "233.7.117.106",
             4033,
             "33.40", "-117.19"));
 
-        _sources.put("SCI", new Source("SCI",
+        _sources.put("SCI", new Source("San Clemente Island",
             "172.16.42.86",
             "233.7.117.107",
             4034,
             "32.91", "-118.48"));
 
-        _sources.put("SY", new Source("SY",
+        _sources.put("SY", new Source("San Ysabel",
             "172.16.42.86",
             "233.7.117.105",
             4032,
             "33.13", "-116.61"));
 
-        _sources.put("SO", new Source("SO",
+        _sources.put("SO", new Source("Sky Oaks",
             "172.16.42.86",
             "233.7.117.113",
             4041,
@@ -188,13 +188,13 @@ public class WebSocketEndPoint {
                 4038,
                 "32.88", "-117.24"));
 
-        _sources.put("WS", new Source("WS",
+        _sources.put("WS", new Source("Warner Springs",
             "172.16.42.86",
             "233.7.117.119",
             4043,
             "33.27", "-116.64"));
 
-        _sources.put("TP", new Source("TP",
+        _sources.put("TP", new Source("Toro Pk.",
             "172.16.42.86",
             "233.7.117.102",
             4027,
@@ -295,11 +295,12 @@ public class WebSocketEndPoint {
                         }
                         
                         String stationName = parts[1];
-                        
-                        data.put("Name", stationName);
+
+                        Source station = _sources.get(stationName);
+
+                        data.put("Name", station.name);
                         
                         if(!stationsSent.contains(stationName)) {
-                            Source station = _sources.get(stationName);
                             data.put("lat", station.lat);
                             data.put("lng", station.lng);
                             stationsSent.add(stationName);
