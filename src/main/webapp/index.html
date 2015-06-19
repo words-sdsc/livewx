@@ -18,33 +18,58 @@
      var tempLayer = new L.LayerGroup();
      var humidLayer = new L.LayerGroup();
      var windLayer = new L.LayerGroup();
+     var stationLayer = new L.LayerGroup();
  
      var stations = {};
               
      // markers sizes
-     var CIRCLE_R = 12000;
+     var TEMP_RADIUS = 6000;
+     var TEMP_OPACITY = 0.5;
+     var HUMID_RADIUS = 10;
+     var HUMID_OPACITY = 0.5;
      var ARROW_R = 0.12;
-     var CIRCLE_T = 0.5;
      var ARROW_SIZE = 10;
      var center = [ 33.180865, -117.134080 ];
     
      // init map
-     var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-         osmAttrib = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-         osm = L.tileLayer(osmUrl, {
+     var OpenStreetMapLayer = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
              maxZoom : 17,
-             attribution : osmAttrib
+             attribution : '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors'
          });
+         
+     var StamenTerrainLayer = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
+         attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+         subdomains: 'abcd',
+         minZoom: 4,
+         maxZoom: 18,
+         ext: 'png',
+         bounds: [[22, -132], [70, -56]]
+     });
+
+     var MapQuestOpenOSMLayer = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.{ext}', {
+         type: 'map',
+         ext: 'jpg',
+         attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+         subdomains: '1234'
+     });
+
      var map = new L.Map('map', {
-         layers : [ osm, tempLayer, humidLayer, windLayer ],
+         layers : [ MapQuestOpenOSMLayer, tempLayer, humidLayer, windLayer ],
          center : new L.LatLng(center[0], center[1]),
          zoom : 9
      });
 
-     var layers = new L.control.layers({}, {
+     var layers = new L.control.layers(
+         {
+             //"osm" : OpenStreetMapLayer,
+             "Terrain" : StamenTerrainLayer,
+             "Streets" : MapQuestOpenOSMLayer,
+         },
+         {
          "Wind" : windLayer,
          "Temperature" : tempLayer,
-         "Humidity" : humidLayer
+         "Humidity" : humidLayer,
+         "Stations" : stationLayer
          },
          {collapsed : false})
          .addTo(map);
@@ -166,11 +191,11 @@
          }
      }
      
-     setPopupContents = function(data) {
+     setPopupContents = function(data, name) {
  
-         return ("<table>" + "<tr>" + "<th>Wind Speed (m/s)</th>"
+         return ("Measurements at " + name + "<br/><table>" + "<tr>" + "<th>Wind Speed (m/s)</th>"
                  + "<th>Wind Average Direction</th>"
-                 + "<th>Air Temperature (C)</th>"
+                 + "<th>Air Temperature (F)</th>"
                  + "<th>Relative Humidity (%)</th>" + "</tr>" + "<tr>"
                  + "<td>" + data.windspeed + "</td>" + "<td>"
                  + data.winddirection + "</td>" + "<td>"
@@ -203,8 +228,8 @@
                          parseFloat(message.lng));
                  station.name = message.Name;
                  
-                 console.log("new station " + station.name + " at " +
-                         station.latlng.lat + " " + station.latlng.lng);
+                 //console.log("new station " + station.name + " at " +
+                         //station.latlng.lat + " " + station.latlng.lng);
 
                  station.humidCircle = null;
                  station.tempCircle = null;
@@ -219,28 +244,30 @@
                  };
                  
                  station.label = L.marker(station.latlng,
-                     {icon : new L.divIcon(
-                         {iconAnchor : new L.Point(station.latlng),
-                         iconSize: [0, 0],
-                         html : station.name
+                    {icon : new L.divIcon(
+                        {iconAnchor : new L.Point(station.latlng),
+                         iconSize: [150, 20],
+                         html : station.name,
+                         className : 'station-icon'
                      })
                  })
-                 .addTo(map);
+                 .addTo(stationLayer);
                  
                  stations[code] = station;
              }
              
              if (jsonData.message.hasOwnProperty('Ta') && map.hasLayer(tempLayer)) {                 
                  var ta = jsonData.message.Ta.split(".");
-                 station.data.temperature = parseFloat(ta[0]);
-                 var color = select_th_color(ta[0]);
+                 var celcius = parseFloat(ta[0]);
+                 var color = select_th_color(celcius);
+                 station.data.temperature = celcius * 1.8 + 32;
                  if(station.tempCircle == null) {
-                     station.tempCircle = L.circle(station.latlng, CIRCLE_R, {
+                     station.tempCircle = L.circle(station.latlng, TEMP_RADIUS, {
                          color : '#000',
                          weight : 1,
                          opacity : 1,
                          fillColor : color,
-                         fillOpacity : CIRCLE_T,
+                         fillOpacity : TEMP_OPACITY,
                          zIndex : 5
                          })
                      .addTo(tempLayer);
@@ -255,13 +282,13 @@
                  var color = get_humidity_color(station.data.humidity);
                  if(station.humidCircle == null) {
                      station.humidCircle = new L.circleMarker(station.latlng,
-                         {radius : 20,
+                         {radius : HUMID_RADIUS,
                          color : '#000',
                          weight : 1,
                          opacity : 1,
                          fillColor : color,
-                         fillOpacity : 1})
-                        .bindPopup(setPopupContents(station.data))
+                         fillOpacity : HUMID_OPACITY})
+                        .bindPopup(setPopupContents(station.data, station.name))
                         .addTo(humidLayer);
                                                   
                  } else {
@@ -312,7 +339,7 @@
              
              // update the pop up
              if(station.humidCircle != null) {
-                 station.humidCircle.bindPopup(setPopupContents(station.data));
+                 station.humidCircle.bindPopup(setPopupContents(station.data, station.name));
              }
 
              // check for santa ana conditions
