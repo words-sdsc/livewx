@@ -295,10 +295,13 @@ public class WebSocketEndPoint {
                         }
                         
                         String stationName = parts[1];
+                        
+                        String measurementType = parts[3];
 
                         Source station = _sources.get(stationName);
 
                         data.put("Name", station.name);
+                        data.put("mtype", measurementType);
                         
                         if(!stationsSent.contains(stationName)) {
                             data.put("lat", station.lat);
