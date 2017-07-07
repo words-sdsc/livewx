@@ -95,37 +95,37 @@ public class WebSocketEndPoint {
           4042,
           "33.33", "-116.92"));
 
-        _sources.put("BMR", new Source("Black Mt.",
+        _sources.put("BMR", new Source("Big Black Mountain",
             "172.16.42.86",
             "233.7.117.125",
             4045,
             "33.16", "-116.811"));
     
-        _sources.put("CNMZ3", new Source("Cabrillo",
+        _sources.put("CNMZ3", new Source("Cabrillo National Monument, Zone 3",
             "172.16.42.86",
             "233.7.117.82",
             4026,
             "32.67", "-117.24"));
 
-        _sources.put("HWB", new Source("HWB",
+        _sources.put("HWB", new Source("West Ramona",
             "172.16.42.86",
             "233.7.117.79",
             4021,
             "33.03", "-116.96"));
 
-        _sources.put("LP", new Source("Lyon's Pk.",
+        _sources.put("LP", new Source("Lyons Peak",
             "172.16.42.86",
             "233.7.117.79",
             4020,
             "32.70", "-116.76"));
 
-        _sources.put("ML", new Source("Mt. Laguna",
+        _sources.put("ML", new Source("Mount Laguna",
             "172.16.42.86",
             "233.7.117.111",
             4039,
             "32.89", "-116.42"));
 
-        _sources.put("MW", new Source("Mt. Woodson",
+        _sources.put("MW", new Source("Mount Woodson",
             "172.16.42.86",
             "233.7.117.79",
             4024,
@@ -152,7 +152,7 @@ public class WebSocketEndPoint {
             4044,
             "33.32", "-116.68"));
 
-        _sources.put("RM", new Source("Red Mt.",
+        _sources.put("RM", new Source("Red Mountain",
             "172.16.42.86",
             "233.7.117.106",
             4033,
@@ -176,7 +176,7 @@ public class WebSocketEndPoint {
             4041,
             "33.38", "-116.62"));
 
-        _sources.put("SMERNS", new Source("SMERNS",
+        _sources.put("SMERNS", new Source("SMER North Station",
             "172.16.42.86",
             "233.7.117.128",
             4046,
@@ -194,7 +194,7 @@ public class WebSocketEndPoint {
             4043,
             "33.27", "-116.64"));
 
-        _sources.put("TP", new Source("Toro Pk.",
+        _sources.put("TP", new Source("Toro Peak",
             "172.16.42.86",
             "233.7.117.102",
             4027,
